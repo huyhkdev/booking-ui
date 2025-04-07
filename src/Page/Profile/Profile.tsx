@@ -1,11 +1,7 @@
-import { useEffect, useState } from 'react'
-import { app, auth, db } from '../../../firebase/FirebaseConfig'
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
+import {  useState } from 'react'
 import { TypeInfor } from '../../Types/Users.type'
 import { Select } from 'antd'
-import { reload } from 'firebase/auth'
 import { CameraFilled } from '@ant-design/icons'
-import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage'
 import { Image } from 'antd'
 
 const Profile = () => {
@@ -15,30 +11,30 @@ const Profile = () => {
   const [updatedInfo, setUpdatedInfo] = useState<any>({})
 
   const [imageUrl, setImageUrl] = useState<string>('')
-  const fetchUserDetail = async () => {
-    auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        await reload(user)
+  // const fetchUserDetail = async () => {
+  //   auth.onAuthStateChanged(async (user) => {
+  //     if (user) {
+  //       await reload(user)
 
-        if (user.emailVerified) {
-          const userRef = doc(db, 'Users', user.uid)
-          await setDoc(userRef, { emailVerified: true }, { merge: true })
-        }
-        try {
-          const docRef = doc(db, 'Users', user.uid)
-          const docSnap = await getDoc(docRef)
-          if (docSnap.exists()) {
-            const data = docSnap.data()
-            setUserDetails(docSnap.data() as TypeInfor)
-            setUpdatedInfo(docSnap.data())
-            setImageUrl(data.photoURL || null)
-          }
-        } catch (error) {
-          console.error('Error fetching user data:', error)
-        }
-      }
-    })
-  }
+  //       if (user.emailVerified) {
+  //         const userRef = doc(db, 'Users', user.uid)
+  //         await setDoc(userRef, { emailVerified: true }, { merge: true })
+  //       }
+  //       try {
+  //         const docRef = doc(db, 'Users', user.uid)
+  //         const docSnap = await getDoc(docRef)
+  //         if (docSnap.exists()) {
+  //           const data = docSnap.data()
+  //           setUserDetails(docSnap.data() as TypeInfor)
+  //           setUpdatedInfo(docSnap.data())
+  //           setImageUrl(data.photoURL || null)
+  //         }
+  //       } catch (error) {
+  //         console.error('Error fetching user data:', error)
+  //       }
+  //     }
+  //   })
+  // }
   console.log(userDetails)
   const handleEdit = () => {
     setIsEditing(true)
@@ -54,51 +50,51 @@ const Profile = () => {
     setUpdatedInfo({ ...updatedInfo, gender: value })
   }
 
-  const handleSave = async () => {
-    try {
-      const user = auth.currentUser
-      if (user) {
-        await setDoc(
-          doc(db, 'Users', user.uid),
-          {
-            ...updatedInfo,
-            updatedAt: serverTimestamp()
-          },
-          { merge: true }
-        )
-        setUserDetails(updatedInfo)
-        setIsEditing(false)
-        window.location.reload()
-      }
-    } catch (error) {
-      console.error('Error updating user data:', error)
-    }
-  }
+  // const handleSave = async () => {
+  //   try {
+  //     const user = auth.currentUser
+  //     if (user) {
+  //       await setDoc(
+  //         doc(db, 'Users', user.uid),
+  //         {
+  //           ...updatedInfo,
+  //           updatedAt: serverTimestamp()
+  //         },
+  //         { merge: true }
+  //       )
+  //       setUserDetails(updatedInfo)
+  //       setIsEditing(false)
+  //       window.location.reload()
+  //     }
+  //   } catch (error) {
+  //     console.error('Error updating user data:', error)
+  //   }
+  // }
 
-  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0]
-    if (file) {
-      try {
-        const storage = getStorage(app)
-        const storageRef = ref(storage, 'images/' + file.name)
-        await uploadBytes(storageRef, file)
-        const downloadUrl = await getDownloadURL(storageRef)
-        console.log(downloadUrl)
-        setImageUrl(downloadUrl)
-        const user = auth.currentUser
-        if (user) {
-          const userRef = doc(db, 'Users', user.uid)
-          await setDoc(userRef, { photoURL: downloadUrl }, { merge: true })
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-  }
+  // async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //   const file = event.target.files?.[0]
+  //   if (file) {
+  //     try {
+  //       const storage = getStorage(app)
+  //       const storageRef = ref(storage, 'images/' + file.name)
+  //       await uploadBytes(storageRef, file)
+  //       const downloadUrl = await getDownloadURL(storageRef)
+  //       console.log(downloadUrl)
+  //       setImageUrl(downloadUrl)
+  //       const user = auth.currentUser
+  //       if (user) {
+  //         const userRef = doc(db, 'Users', user.uid)
+  //         await setDoc(userRef, { photoURL: downloadUrl }, { merge: true })
+  //       }
+  //     } catch (error) {
+  //       console.log(error)
+  //     }
+  //   }
+  // }
 
-  useEffect(() => {
-    fetchUserDetail()
-  }, [])
+  // useEffect(() => {
+  //   fetchUserDetail()
+  // }, [])
 
   return (
     <div>
@@ -123,7 +119,7 @@ const Profile = () => {
                 <input
                   type='file'
                   className='absolute inset-0 rounded-full w-full h-full opacity-0 cursor-pointer'
-                  onChange={handleFileChange}
+                  // onChange={handleFileChange}
                 />
 
                 <div className='absolute bottom-0 left-0 w-full   bg-opacity-70 flex items-center justify-center rounded-b-full'>
@@ -233,7 +229,7 @@ const Profile = () => {
             {/* Single Button at the Bottom */}
             <div className='flex justify-end mt-4'>
               <button
-                onClick={isEditing ? handleSave : handleEdit}
+                // onClick={isEditing ? handleSave : handleEdit}
                 className={`text-white font-medium p-2 rounded ${isEditing ? 'bg-green-600' : 'bg-primary'}`}
               >
                 {isEditing ? 'Lưu' : 'Chỉnh sửa'}

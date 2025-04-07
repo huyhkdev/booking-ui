@@ -2,12 +2,12 @@ import { ButtonAdnt } from '../../../Components/button'
 import { useForm } from 'react-hook-form'
 import { schema, schemaType } from '../../../utils/Rule'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../../../../firebase/FirebaseConfig'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Input } from '../../../Components/input'
 import InputEye from '../../../Components/inputEye'
 import { notification } from 'antd'
+import { useLogin } from '../../../hooks/auth/useLogin'
+import { httpErrorToToastAtr } from '../../../helpers/httpErrorToToastAtr'
 
 const Login = () => {
   const {
@@ -15,24 +15,30 @@ const Login = () => {
     handleSubmit,
     formState: { errors }
   } = useForm<schemaType>({ resolver: yupResolver(schema) })
-
+  const { mutate, isPending } = useLogin();
+  const navigate = useNavigate();
   const onSubmit = async (data: schemaType) => {
-    try {
-      await signInWithEmailAndPassword(auth, data.email, data.password)
-      if (data) {
-        window.location.href = '/'
+
+    mutate(data, {
+      onSuccess: (data) => {
+        console.log(data.data.data.accessToken)
+        localStorage.setItem('accessToken', data.data.data.accessToken);
+        localStorage.setItem('code', data.data.data.refreshToken);
+        localStorage.setItem('userInfo', JSON.stringify(data.data.data.user));
+        navigate('/');
+        notification.success({
+          message: 'Đăng nhập thành công',
+          description: 'Chúc bạn một ngày tốt lành'
+        })
+      },
+      onError: (error) => {
+        const [message, description] = httpErrorToToastAtr(error)
+        notification.error({
+          message,
+          description
+        })
       }
-      notification.success({
-        message: 'Thành công',
-        description: 'Bạn đã đăng nhập thành công'
-      })
-    } catch (error) {
-      notification.error({
-        message: 'Đăng nhập thất bại',
-        description: 'Email hoặc mật khẩu không hợp lệ. Vui lòng thử lại.'
-      })
-      console.log(error)
-    }
+    })
   }
   return (
     <form className='space-y-4' onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -46,7 +52,7 @@ const Login = () => {
         </Link>
       </p>
 
-      <ButtonAdnt label='Tiếp tục' style='py-3' />
+      <ButtonAdnt isLoading={isPending} label='Tiếp tục' style='py-3' />
     </form>
   )
 }

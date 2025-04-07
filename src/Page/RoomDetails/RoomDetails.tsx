@@ -20,11 +20,9 @@ const RoomDetails = () => {
   const { hotelId } = useParams<{ hotelId: string }>();
   const params = new URLSearchParams(window.location.search)
   const checkInDate = params.get('checkInDate')
-  const checkOutDate = params.get('checkOutDate')
   const [hotel, setHotel] = useState(null)
   const [rooms, setRooms] = useState([])
   const [isLoading, setIsLoading] = useState(true)
-  const navigate = useNavigate()
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {

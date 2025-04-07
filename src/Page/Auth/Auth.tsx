@@ -1,13 +1,44 @@
 import { GoogleOutlined } from '@ant-design/icons'
 import backgroundImage from '../../assets/imageAuthen.jpg'
 import { motion } from 'framer-motion'
-import { handleGoogle } from '../../service/Auth/HandleGoogle'
-import { Outlet } from 'react-router-dom'
+import { Outlet, useNavigate } from 'react-router-dom'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, provider } from '../../firebase'
+import { useLoginGoogle } from '../../hooks/auth/useLoginGoogle'
+import { httpErrorToToastAtr } from '../../helpers/httpErrorToToastAtr'
+import { notification } from 'antd'
 
 const Auth = () => {
-  const loginWithGoogle = async () => {
-    await handleGoogle() // Gọi hàm handleGoogle từ file khác
-  }
+  const { mutate, isPending } = useLoginGoogle();
+  const navigate = useNavigate();
+  const handleLoginWithGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const userInfo = { email: result.user.email, fullName: result.user.displayName, accessToken: (result.user as any).accessToken };
+      mutate({ email: userInfo.email as string, fullName: userInfo.fullName as string, accessToken: userInfo.accessToken }, {
+        onSuccess: (data) => {
+          console.log(data.data.data.accessToken)
+          localStorage.setItem('accessToken', data.data.data.accessToken);
+          localStorage.setItem('code', data.data.data.refreshToken);
+          localStorage.setItem('userInfo', JSON.stringify(data.data.data.user));
+          navigate('/');
+          notification.success({
+            message: 'Đăng nhập thành công',
+            description: 'Chúc bạn một ngày tốt lành'
+          })
+        },
+        onError: (error) => {
+          const [message, description] = httpErrorToToastAtr(error)
+          notification.error({
+            message,
+            description
+          })
+        }
+      });
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
   return (
     <div className=' grid grid-cols-1  md:grid-cols-2 border-y'>
       <motion.div
@@ -27,7 +58,7 @@ const Auth = () => {
             <hr className='w-1/2 border-gray-300' />
           </div>
           <button
-            onClick={loginWithGoogle}
+            onClick={handleLoginWithGoogle}
             className='w-full font-medium  px-4 text-center border border-gray-300 rounded-md py-3 hover:bg-gray-200 cursor-pointer '
           >
             <GoogleOutlined className='text-primary text-xl text-center mr-1' />
