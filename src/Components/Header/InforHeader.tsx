@@ -34,6 +34,9 @@ const InforHeader = () => {
   )
   return (
     <div className='flex items-center gap-4 cursor-pointer'>
+    <Link to='/owner/hotels' className='text-[16px] font-medium text-black hover:bg-grey1 rounded-full p-3 transition duration-300 ease-in-out'>
+      Đăng khách sạn ngay
+    </Link>
       <div className='text-[16px] font-medium text-black hover:bg-grey1 rounded-full p-3 transition duration-300 ease-in-out'>
         Cho thuê chỗ ở qua Airbnb
       </div>
