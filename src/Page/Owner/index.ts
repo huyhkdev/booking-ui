@@ -1,1 +1,2 @@
-export * from './OwnerHotel.tsx'
+export * from './OwnerHotelRequest.tsx'
+export * from './ListHotel.tsx'

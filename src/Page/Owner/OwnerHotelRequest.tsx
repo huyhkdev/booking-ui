@@ -3,8 +3,10 @@ import { FileChangeEvent, OwnerUploadCV } from '../../Components/Owner'
 import { notification, Spin } from 'antd'
 import { httpErrorToToastAtr } from '../../helpers/httpErrorToToastAtr'
 import { useInfoRequestOwner, useOwnerRegister } from '../../hooks/owner'
+import { useNavigate } from 'react-router-dom'
 
-export const OwnerHotel = () => {
+export const OwnerHotelRequest = () => {
+  const navigate = useNavigate()
   const [file, setFile] = useState<File | null>(null)
   const [userRole, setUserRole] = useState<string>('user')
   const [isPopupVisible, setIsPopupVisible] = useState(false)
@@ -54,17 +56,16 @@ export const OwnerHotel = () => {
 
   useEffect(() => {
     const user = JSON.parse(String(localStorage.getItem('userInfo')))
-    if (user && user.role !== 'owner') {
+    if (user && user.role === 'owner') {
+      navigate('/owner/hotels')
+    } else {
       setUserRole(user.role)
-      if (inforRequest?.status !== 'pending') {
-        setIsPopupVisible(true)
-      }
     }
-    if (inforRequest?.status === 'pending') {
-      setIsPopupVisible(false)
+    if (!isLoading) {
+      inforRequest?.status ? setIsPopupVisible(false) : setIsPopupVisible(true)
     }
   }, [inforRequest])
-
+  
   if (isLoading) {
     return (
       <div className='flex justify-center items-center h-screen'>
@@ -78,7 +79,7 @@ export const OwnerHotel = () => {
       <h1 className='text-2xl font-bold mb-4'>Đăng khách sạn</h1>
 
       {userRole === 'user' &&
-        (!inforRequest.status ? (
+        (!inforRequest?.status ? (
           <>
             <div className='alert alert-warning'>Bạn cần đăng ký trở thành chủ sở hữu để có thể đăng khách sạn.</div>
             <button
