@@ -15,11 +15,13 @@ import Hotel from '../Page/Hotel/Hotel'
 import Payment from '../Page/Payment/Payment'
 import Success from '../Page/Payment/Success'
 import OwnerProtectedRoute from './OwnerProtectedRoute'
-import { HotelRegistration, ListHotel, OwnerHotelRequest } from '../Page/Owner'
+import { HotelDetail, HotelRegistration, ListHotel, OwnerHotelRequest } from '../Page/Owner'
+import DemoPage from '../Page/DemoPage'
 
 const RouterElement = () => {
   return (
     <Routes>
+      <Route path='/map' element={<DemoPage />}/>
       <Route path='/' element={<MainLayout />}>
         <Route path='/' element={<Home />} />
         <Route path='' element={<Auth />}>
@@ -36,6 +38,7 @@ const RouterElement = () => {
         {/* owner */}
         <Route path='/owner/request' element={<OwnerHotelRequest />}></Route>
         <Route path='/owner/hotels' element={<OwnerProtectedRoute element={<ListHotel />} />}></Route>
+        <Route path='/owner/hotels/:hotelId' element={<OwnerProtectedRoute element={<HotelDetail />} />}></Route>
         <Route path='/owner/hotels/register' element={<OwnerProtectedRoute element={<HotelRegistration />} />}></Route>
       </Route>
     </Routes>

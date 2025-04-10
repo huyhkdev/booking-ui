@@ -3,23 +3,25 @@ import { Form, Input, Select, Button, Upload, notification, Checkbox, Space, Ima
 import { UploadOutlined } from '@ant-design/icons'
 import useProvince from '../../../hooks/province/useProvince'
 import './HotelRegistration.pcss'
-import { useHotelRegister } from '../../../hooks/owner/useHotelRegister'
 import { httpErrorToToastAtr } from '../../../helpers/httpErrorToToastAtr'
+import { useNavigate } from 'react-router-dom'
+import { useHotelRegister } from '../../../hooks/owner'
 
 const { Option } = Select
 
 const amenitiesList = [
-  { label: 'Bãi đỗ xe miễn phí', value: 'Free Parking' },
-  { label: 'WiFi miễn phí', value: 'Free WiFi' },
-  { label: 'Hồ bơi', value: 'Pool' },
-  { label: 'Phòng gym', value: 'Gym' },
-  { label: 'Nhà hàng', value: 'Restaurant' },
-  { label: 'Lễ tân 24/7', value: '24h Reception' },
-  { label: 'Dịch vụ phòng', value: 'Room Service' },
-  { label: 'Dịch vụ giặt ủi', value: 'Laundry' }
+  { label: 'Bãi đỗ xe miễn phí', value: 'Bãi đỗ xe miễn phí' },
+  { label: 'WiFi miễn phí', value: 'WiFi miễn phí' },
+  { label: 'Hồ bơi', value: 'Hồ bơi' },
+  { label: 'Phòng gym', value: 'Phòng gym' },
+  { label: 'Nhà hàng', value: 'Nhà hàng' },
+  { label: 'Lễ tân 24/7', value: 'Lễ tân 24/7' },
+  { label: 'Dịch vụ phòng', value: 'Dịch vụ phòng' },
+  { label: 'Dịch vụ giặt ủi', value: 'Dịch vụ giặt ủi' }
 ]
 
 export const HotelRegistration = () => {
+  const navigate = useNavigate()
   const { data: provinces, isLoading } = useProvince()
   const { mutate, isPending } = useHotelRegister()
   const [form] = Form.useForm()
@@ -38,7 +40,7 @@ export const HotelRegistration = () => {
         if (Array.isArray(value)) {
           value.forEach((v) => formData.append(`${key}[]`, v))
         } else {
-          formData.append(key, value ?? '' as any)
+          formData.append(key, value ?? ('' as any))
         }
       })
 
@@ -52,6 +54,7 @@ export const HotelRegistration = () => {
             message: 'Đăng khách sạn thành công!',
             description: 'Khách sạn của bạn đã được đăng lên hệ thống.'
           })
+          navigate('/owner/hotels')
         },
         onError: (error) => {
           const [message, description] = httpErrorToToastAtr(error)
@@ -63,6 +66,22 @@ export const HotelRegistration = () => {
         message: 'Lỗi xác thực form!',
         description: 'Vui lòng kiểm tra lại các trường bắt buộc.'
       })
+    }
+  }
+  const handlePreview = async (file: any) => {
+    let src = file.url
+    if (!src) {
+      src = await new Promise<string>((resolve) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file.originFileObj)
+        reader.onload = () => resolve(reader.result as string)
+      })
+    }
+    const image = new window.Image()
+    image.src = src
+    const imgWindow = window.open(src)
+    if (imgWindow) {
+      imgWindow.document.write(image.outerHTML)
     }
   }
 
@@ -165,9 +184,10 @@ export const HotelRegistration = () => {
                 fileList={fileList}
                 onChange={handleFileChange}
                 beforeUpload={() => false}
+                onPreview={handlePreview}
                 listType='picture-card'
               >
-                <Button icon={<UploadOutlined />} size='large'></Button>
+                <Button icon={<UploadOutlined />} size='large' />
               </Upload>
             </Form.Item>
 
