@@ -15,8 +15,7 @@ import Hotel from '../Page/Hotel/Hotel'
 import Payment from '../Page/Payment/Payment'
 import Success from '../Page/Payment/Success'
 import OwnerProtectedRoute from './OwnerProtectedRoute'
-import { ListHotel, OwnerHotelRequest } from '../Page/Owner'
-import { HotelRegistration } from '../Page/Owner/HotelRegistration'
+import { HotelRegistration, ListHotel, OwnerHotelRequest } from '../Page/Owner'
 
 const RouterElement = () => {
   return (
