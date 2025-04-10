@@ -34,9 +34,9 @@ const InforHeader = () => {
   )
   return (
     <div className='flex items-center gap-4 cursor-pointer'>
-      <div className='text-[16px] font-medium text-black hover:bg-grey1 rounded-full p-3 transition duration-300 ease-in-out'>
-        Cho thuê chỗ ở qua Airbnb
-      </div>
+    <Link to='/owner/request' className='text-[16px] font-medium text-black hover:bg-grey1 rounded-full p-3 transition duration-300 ease-in-out'>
+      Đăng khách sạn ngay
+    </Link>
       <Popover content={content} trigger='click' className='hover:shadow-xl '>
         <div className='flex items-center p-2 border border-gray-300 rounded-full hover:bg-gray-100 transition duration-300 ease-in-out '>
           {isLogin ? (

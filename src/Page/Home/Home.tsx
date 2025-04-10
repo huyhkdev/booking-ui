@@ -2,9 +2,9 @@ import { useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import Video from '../../assets/video.mp4'
 import Image from '../../assets/ImageHome.png'
-import { Link } from 'react-router-dom'
 import Section from './Section'
 import FormSearch from './FormSeach'
+import MapSection from '../../Components/map'
 const Home = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -133,7 +133,15 @@ const Home = () => {
           </div>
         </div>
       </section>
-
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        whileHover={{ scale: 1.01 }}
+        className='h-3/5 mx-auto w-5/6 rounded-2xl shadow-xl overflow-hidden border border-gray-200 hover:shadow-2xl transition-shadow duration-300 bg-white'
+      >
+        <MapSection />
+      </motion.div>
       {/* Testimonials Section */}
       <section className='py-16'>
         <div className='container mx-auto px-4'>
