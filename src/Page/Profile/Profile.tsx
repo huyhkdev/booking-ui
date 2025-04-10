@@ -1,101 +1,73 @@
-import {  useState } from 'react'
-import { TypeInfor } from '../../Types/Users.type'
-import { Select } from 'antd'
+import { useEffect, useState } from 'react'
 import { CameraFilled } from '@ant-design/icons'
-import { Image } from 'antd'
-
+import { useGetUserProfile } from '../../hooks/auth/useFetchInfo'
+import { useAccessToken } from '../../hooks/auth/useUserInfo'
+import LoadingSpin from '../../Components/LoadingSpin'
+import { Button, Image, notification } from 'antd'
+import { userUpdateProfile } from '../../hooks/auth/userUpdateProfile'
+import { useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
+import axios from 'axios'
+const USER_ACTIVE_STATE = "active";
+const Gender = {
+  'male': "Nam",
+  'female': "Nữ",
+  'other': "Khác"
+}
 const Profile = () => {
-  const [userDetails, setUserDetails] = useState<TypeInfor | null>(null)
-  const [isEditing, setIsEditing] = useState(false)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [updatedInfo, setUpdatedInfo] = useState<any>({})
-
-  const [imageUrl, setImageUrl] = useState<string>('')
-  // const fetchUserDetail = async () => {
-  //   auth.onAuthStateChanged(async (user) => {
-  //     if (user) {
-  //       await reload(user)
-
-  //       if (user.emailVerified) {
-  //         const userRef = doc(db, 'Users', user.uid)
-  //         await setDoc(userRef, { emailVerified: true }, { merge: true })
-  //       }
-  //       try {
-  //         const docRef = doc(db, 'Users', user.uid)
-  //         const docSnap = await getDoc(docRef)
-  //         if (docSnap.exists()) {
-  //           const data = docSnap.data()
-  //           setUserDetails(docSnap.data() as TypeInfor)
-  //           setUpdatedInfo(docSnap.data())
-  //           setImageUrl(data.photoURL || null)
-  //         }
-  //       } catch (error) {
-  //         console.error('Error fetching user data:', error)
-  //       }
-  //     }
-  //   })
-  // }
-  console.log(userDetails)
-  const handleEdit = () => {
-    setIsEditing(true)
+  const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+  const token = useAccessToken();
+  const { data, isLoading } = useGetUserProfile(token as string);
+  const userDetails = data?.data?.data;
+  const [userEdit, setUserEdit] = useState<any>(userDetails);
+  const uploadImage = (files: FileList): void => {
+    const formData = new FormData();
+    formData.append("file", files[0]);
+    formData.append("upload_preset", "<your upload preset>");
+  
+    axios
+      .post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_FIREBASE_PROJECT_ID}/image/upload`, formData)
+      .then((response) => {
+        const imageUrl = response.data.secure_url;
+        // handleChangeAvatar(imageUrl); 
+      })
+      .catch((error) => {
+        console.error("Upload failed:", error);
+      });
+  };
+ 
+  const handleAvatarChange = (e) => {
+    uploadImage(e.target.files);
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleChange = (e: any) => {
-    // Cập nhật thông tin trong updatedInfo
-    setUpdatedInfo({ ...updatedInfo, [e.target.name]: e.target.value })
+  const { mutate, isPending } = userUpdateProfile(token as string);
+  const handleEditButton = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+    } else {
+      mutate(userEdit, {
+        onSuccess: () => {
+          notification.success({ message: "Cập nhật thông tin thành công!" });
+          queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+          setIsEditing(false);
+        },
+      });
+      setIsEditing(false);
+    }
   }
-
-  const handleGenderChange = (value: string) => {
-    setUpdatedInfo({ ...updatedInfo, gender: value })
+  const handleChangeProfile = (e: any) => {
+    const atr = e.target.name;
+    setUserEdit((user: any) => ({ ...user, [atr]: e.target.value }));
   }
+  const isUserActive = userDetails?.state === USER_ACTIVE_STATE;
 
-  // const handleSave = async () => {
-  //   try {
-  //     const user = auth.currentUser
-  //     if (user) {
-  //       await setDoc(
-  //         doc(db, 'Users', user.uid),
-  //         {
-  //           ...updatedInfo,
-  //           updatedAt: serverTimestamp()
-  //         },
-  //         { merge: true }
-  //       )
-  //       setUserDetails(updatedInfo)
-  //       setIsEditing(false)
-  //       window.location.reload()
-  //     }
-  //   } catch (error) {
-  //     console.error('Error updating user data:', error)
-  //   }
-  // }
-
-  // async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-  //   const file = event.target.files?.[0]
-  //   if (file) {
-  //     try {
-  //       const storage = getStorage(app)
-  //       const storageRef = ref(storage, 'images/' + file.name)
-  //       await uploadBytes(storageRef, file)
-  //       const downloadUrl = await getDownloadURL(storageRef)
-  //       console.log(downloadUrl)
-  //       setImageUrl(downloadUrl)
-  //       const user = auth.currentUser
-  //       if (user) {
-  //         const userRef = doc(db, 'Users', user.uid)
-  //         await setDoc(userRef, { photoURL: downloadUrl }, { merge: true })
-  //       }
-  //     } catch (error) {
-  //       console.log(error)
-  //     }
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchUserDetail()
-  // }, [])
-
+  useEffect(() => {
+    setUserEdit({
+      ...userDetails,
+      dob: userDetails?.dob ? dayjs(userDetails.dob).format('YYYY-MM-DD') : '',
+    });
+  }, [userDetails])
+  if (isLoading) return <LoadingSpin />
   return (
     <div>
       <div className='bg-gray-100 min-h-screen flex justify-center my-10'>
@@ -103,29 +75,31 @@ const Profile = () => {
           <div className='max-w-4xl w-full bg-white p-6 rounded-lg shadow-lg mt-10'>
             <div className='flex items-center justify-between'>
               <h1 className='text-3xl font-bold'>Thông tin cá nhân</h1>
-              <div className='relative w-16 h-16'>
-                {imageUrl ? (
+              <label className='relative w-16 h-16 cursor-pointer'>
+                {userDetails?.avatarUrl ? (
                   <Image
                     className='rounded-full w-full h-full object-cover'
-                    src={imageUrl}
+                    src={userDetails.avatarUrl}
                     alt='Profile'
-                    preview={false} // Disable preview if not needed
+                    preview={false}
                   />
                 ) : (
                   <div className='rounded-full w-full h-full bg-gray-200 flex items-center justify-center'>
                     <span className='text-gray-500'>No Image</span>
                   </div>
                 )}
+
                 <input
                   type='file'
-                  className='absolute inset-0 rounded-full w-full h-full opacity-0 cursor-pointer'
-                  // onChange={handleFileChange}
+                  className='absolute inset-0 w-full h-full opacity-0'
+                  onChange={handleAvatarChange}
                 />
 
-                <div className='absolute bottom-0 left-0 w-full   bg-opacity-70 flex items-center justify-center rounded-b-full'>
+                <div className='absolute bottom-0 left-0 w-full bg-white bg-opacity-70 flex items-center justify-center rounded-b-full'>
                   <CameraFilled className='text-neutral-500' />
                 </div>
-              </div>
+              </label>
+
             </div>
             <p className='text-gray-500 mt-2'>
               Cập nhật thông tin của bạn và tìm hiểu các thông tin này được sử dụng ra sao.
@@ -140,13 +114,13 @@ const Profile = () => {
                   {isEditing ? (
                     <input
                       type='text'
-                      name='displayName'
-                      value={updatedInfo.displayName || ''}
-                      onChange={handleChange}
+                      name='fullName'
+                      value={userEdit?.fullName || ''}
+                      onChange={handleChangeProfile}
                       className='border rounded p-2'
                     />
                   ) : (
-                    <p className='text-gray-500 mt-1'>{userDetails.displayName}</p>
+                    <p className='text-gray-500 mt-1'>{userDetails?.fullName}</p>
                   )}
                 </div>
               </div>
@@ -158,33 +132,16 @@ const Profile = () => {
                   <p className='text-gray-500 mt-1'>
                     {userDetails.email}
                     <span
-                      className={`p-1 ml-1 font-medium text-white ${
-                        userDetails.emailVerified ? 'bg-green-700 rounded' : 'bg-red-700 rounded'
-                      }`}
+                      className={`p-1 ml-1 font-medium text-white ${isUserActive ? 'bg-green-700 rounded' : 'bg-red-700 rounded'
+                        }`}
                     >
-                      {userDetails.emailVerified ? 'Đã xác thực' : 'Chưa xác thực'}
+                      {isUserActive ? 'Đã xác thực' : 'Chưa xác thực'}
                     </span>
                   </p>
                 </div>
               </div>
 
               {/* Phone Number */}
-              <div className='flex justify-between items-center border-t py-4'>
-                <div>
-                  <p className='font-medium text-gray-700'>Số điện thoại</p>
-                  {isEditing ? (
-                    <input
-                      type='text'
-                      name='phoneNumber'
-                      value={updatedInfo.phoneNumber || ''}
-                      onChange={handleChange}
-                      className='border rounded p-2'
-                    />
-                  ) : (
-                    <p className='text-gray-500 mt-1'>{userDetails.phoneNumber}</p>
-                  )}
-                </div>
-              </div>
 
               {/* Birth Date */}
               <div className='flex justify-between items-center border-t py-4'>
@@ -193,13 +150,18 @@ const Profile = () => {
                   {isEditing ? (
                     <input
                       type='date'
-                      name='birthDate'
-                      value={updatedInfo.birthDate || ''}
-                      onChange={handleChange}
+                      name='dob'
+                      value={userEdit?.dob || ''}
+                      onChange={handleChangeProfile}
                       className='border rounded p-2'
                     />
                   ) : (
-                    <p className='text-gray-500 mt-1'>{userDetails.birthDate || 'Nhập ngày sinh của bạn'}</p>
+                    <p className='text-gray-500 mt-1'>
+                      {userDetails?.dob
+                        ? new Date(userDetails.dob).toLocaleDateString('vi-VN')
+                        : 'Vui lòng cập nhật ngày sinh'}
+                    </p>
+
                   )}
                 </div>
               </div>
@@ -209,18 +171,18 @@ const Profile = () => {
                 <div>
                   <p className='font-medium text-gray-700'>Giới tính</p>
                   {isEditing ? (
-                    <Select
-                      id='gender-select'
-                      value={updatedInfo.gender || 'Chọn giới tính'}
-                      onChange={handleGenderChange}
+                    <select
+                      name='gender'
+                      onChange={handleChangeProfile}
+                      value={userEdit?.gender || 'Vui lòng cập nhật giới tính'}
                       className='w-[200px]'
                     >
-                      <Select.Option value='Nam'>Nam</Select.Option>
-                      <Select.Option value='Nữ'>Nữ</Select.Option>
-                      <Select.Option value='Khác'>Khác</Select.Option>
-                    </Select>
+                      <option value='male'>Nam</option>
+                      <option value='female'>Nữ</option>
+                      <option value='other'>Khác</option>
+                    </select>
                   ) : (
-                    <p className='text-gray-500 mt-1'>{userDetails.gender || 'Chọn giới tính'}</p>
+                    <p className='text-gray-500 mt-1'>{Gender[userDetails.gender as string] || 'Vui lòng cập nhật giới tính'}</p>
                   )}
                 </div>
               </div>
@@ -228,12 +190,13 @@ const Profile = () => {
 
             {/* Single Button at the Bottom */}
             <div className='flex justify-end mt-4'>
-              <button
-                // onClick={isEditing ? handleSave : handleEdit}
+              <Button
+                loading={isPending}
+                onClick={handleEditButton}
                 className={`text-white font-medium p-2 rounded ${isEditing ? 'bg-green-600' : 'bg-primary'}`}
               >
                 {isEditing ? 'Lưu' : 'Chỉnh sửa'}
-              </button>
+              </Button>
             </div>
           </div>
         ) : (
