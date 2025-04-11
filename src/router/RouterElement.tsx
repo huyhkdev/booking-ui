@@ -17,6 +17,9 @@ import Success from '../Page/Payment/Success'
 import OwnerProtectedRoute from './OwnerProtectedRoute'
 import { HotelDetail, HotelRegistration, ListHotel, OwnerHotelRequest } from '../Page/Owner'
 import DemoPage from '../Page/DemoPage'
+import ChangePassword from '../Page/Auth/ChangePassword'
+import ForgotPassword from '../Page/Auth/ForgotPassword'
+import ResetPassword from '../Page/Auth/ResetPassword'
 
 const RouterElement = () => {
   return (
@@ -26,6 +29,10 @@ const RouterElement = () => {
         <Route path='/' element={<Home />} />
         <Route path='' element={<Auth />}>
           <Route path='/login' element={<Login />}></Route>
+          <Route path='/change-password' element={<ChangePassword/>}></Route>
+          <Route path='/forgot-password' element={<ForgotPassword/>}></Route>
+          <Route path='/reset-password/:resetToken' element={<ResetPassword/>}></Route>
+          
           <Route path='/register' element={<Register />}></Route>
         </Route>
         <Route path='/verify' element={<VerifyEmail />}></Route>

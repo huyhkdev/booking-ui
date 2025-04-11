@@ -27,6 +27,9 @@ const InforHeader = () => {
           <Link to='/profile' className='block  text-black hover:bg-primary hover:text-white p-2 rounded'>
             Thông tin cá nhân
           </Link>
+          <Link to='/change-password' className='block  text-black hover:bg-primary hover:text-white p-2 rounded'>
+            Đổi mật khẩu
+          </Link>
           <Logout />
         </div>
       )}
@@ -52,6 +55,8 @@ const InforHeader = () => {
           )}
         </div>
       </Popover>
+
+      
     </div>
   )
 }

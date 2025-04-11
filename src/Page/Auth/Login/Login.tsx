@@ -42,13 +42,18 @@ const Login = () => {
   }
   return (
     <form className='space-y-4' onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Input type='email' label='email' register={register} errors={errors} required={true} placeholder=' ' />
-      <InputEye label='Password' register={register} errors={errors} required={true} placeholder=' ' />
+      <Input type='email' name='email' label='Email' register={register} errors={errors} required={true} placeholder=' ' />
+      <InputEye label='Mật khẩu' name='password' register={register} errors={errors} required={true} placeholder=' ' />
 
       <p className='text-sx text-gray-500 mt-3'>
         Bạn chưa có tài khoản?
-        <Link className='text-primary underline' to='/register'>
+        <Link className='text-primary underline ml-1' to='/register'>
           Đăng ký
+        </Link>
+      </p>
+      <p className='text-sx text-gray-500 mt-3'>
+        <Link className='text-primary underline' to='/forgot-password'>
+          Quên mật khẩu
         </Link>
       </p>
 
