@@ -41,12 +41,12 @@ const Register = () => {
       <div>
         <div className='grid  '>
           <div className='ml-1'>
-            <Input type='text' label='fullName' register={register} errors={errors} required={true} placeholder=' ' />
+            <Input name='fullName' type='text' label='Tên Đầy đủ' register={register} errors={errors} required={true} placeholder=' ' />
           </div>
         </div>
 
-        <Input type='email' label='email' register={register} errors={errors} required={true} placeholder=' ' />
-        <InputEye label='Password' register={register} errors={errors} required={true} placeholder=' ' />
+        <Input name='email' type='email' label='Địa chỉ email' register={register} errors={errors} required={true} placeholder=' ' />
+        <InputEye name='password' label='Mật khẩu' register={register} errors={errors} required={true} placeholder=' ' />
         <p className='text-sx text-gray-500 mt-3'>
           Bạn đã có tài khoản?
           <Link className='text-primary underline' to='/login'>

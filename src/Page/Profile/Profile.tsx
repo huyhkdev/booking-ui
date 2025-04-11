@@ -7,7 +7,7 @@ import { Button, Image, notification } from 'antd'
 import { userUpdateProfile } from '../../hooks/auth/userUpdateProfile'
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import axios from 'axios'
+import { useUploadAvatar } from '../../hooks/auth/useUploadAvatar'
 const USER_ACTIVE_STATE = "active";
 const Gender = {
   'male': "Nam",
@@ -21,24 +21,16 @@ const Profile = () => {
   const { data, isLoading } = useGetUserProfile(token as string);
   const userDetails = data?.data?.data;
   const [userEdit, setUserEdit] = useState<any>(userDetails);
-  const uploadImage = (files: FileList): void => {
-    const formData = new FormData();
-    formData.append("file", files[0]);
-    formData.append("upload_preset", "<your upload preset>");
-  
-    axios
-      .post(`https://api.cloudinary.com/v1_1/${import.meta.env.VITE_FIREBASE_PROJECT_ID}/image/upload`, formData)
-      .then((response) => {
-        const imageUrl = response.data.secure_url;
-        // handleChangeAvatar(imageUrl); 
-      })
-      .catch((error) => {
-        console.error("Upload failed:", error);
-      });
-  };
- 
-  const handleAvatarChange = (e) => {
-    uploadImage(e.target.files);
+
+  const { mutate: uploadMutate, isPending: uploadingPending } = useUploadAvatar(token as string);
+  const handleAvatarChange = (e: any) => {
+    uploadMutate(e.target.files[0], {
+      onSuccess: () => {
+        notification.success({ message: "Cập nhật thông tin thành công!" });
+        queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+        setIsEditing(false);
+      },
+    });
   }
   const { mutate, isPending } = userUpdateProfile(token as string);
   const handleEditButton = () => {
@@ -67,6 +59,25 @@ const Profile = () => {
       dob: userDetails?.dob ? dayjs(userDetails.dob).format('YYYY-MM-DD') : '',
     });
   }, [userDetails])
+  const renderAvatar = () => {
+
+    if (uploadingPending) {
+      return <LoadingSpin />;
+    }
+
+    return userDetails?.avatarUrl ? (
+      <Image
+        className='rounded-full w-full h-full object-cover'
+        src={userDetails.avatarUrl}
+        alt='Profile'
+        preview={false}
+      />
+    ) : (
+      <div className='rounded-full w-full h-full bg-gray-200 flex items-center justify-center'>
+        <span className='text-gray-500'>No Image</span>
+      </div>
+    )
+  }
   if (isLoading) return <LoadingSpin />
   return (
     <div>
@@ -76,18 +87,7 @@ const Profile = () => {
             <div className='flex items-center justify-between'>
               <h1 className='text-3xl font-bold'>Thông tin cá nhân</h1>
               <label className='relative w-16 h-16 cursor-pointer'>
-                {userDetails?.avatarUrl ? (
-                  <Image
-                    className='rounded-full w-full h-full object-cover'
-                    src={userDetails.avatarUrl}
-                    alt='Profile'
-                    preview={false}
-                  />
-                ) : (
-                  <div className='rounded-full w-full h-full bg-gray-200 flex items-center justify-center'>
-                    <span className='text-gray-500'>No Image</span>
-                  </div>
-                )}
+                {renderAvatar()}
 
                 <input
                   type='file'
@@ -177,12 +177,13 @@ const Profile = () => {
                       value={userEdit?.gender || 'Vui lòng cập nhật giới tính'}
                       className='w-[200px]'
                     >
+                      <option value='unkown'>Chọn giới tính</option>
                       <option value='male'>Nam</option>
                       <option value='female'>Nữ</option>
                       <option value='other'>Khác</option>
                     </select>
                   ) : (
-                    <p className='text-gray-500 mt-1'>{Gender[userDetails.gender as string] || 'Vui lòng cập nhật giới tính'}</p>
+                    <p className='text-gray-500 mt-1'>{Gender[userDetails.gender as keyof typeof Gender] || 'Vui lòng cập nhật giới tính'}</p>
                   )}
                 </div>
               </div>
@@ -202,7 +203,10 @@ const Profile = () => {
         ) : (
           ''
         )}
+
       </div>
+
+
     </div>
   )
 }

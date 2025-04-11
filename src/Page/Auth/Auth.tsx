@@ -1,15 +1,18 @@
 import { GoogleOutlined } from '@ant-design/icons'
 import backgroundImage from '../../assets/imageAuthen.jpg'
 import { motion } from 'framer-motion'
-import { Outlet, useNavigate } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { signInWithPopup } from 'firebase/auth'
 import { auth, provider } from '../../firebase'
 import { useLoginGoogle } from '../../hooks/auth/useLoginGoogle'
 import { httpErrorToToastAtr } from '../../helpers/httpErrorToToastAtr'
 import { notification } from 'antd'
-
+const HIDE_FOOTER_FORM = ["/change-password", "/forgot-password"]
+const RESET_PASSWORD_INCLUDE_PATH = "reset-password";
 const Auth = () => {
   const { mutate, isPending } = useLoginGoogle();
+  const { pathname } = useLocation();
+  const isHideFooter = HIDE_FOOTER_FORM.includes(pathname) || pathname.includes(RESET_PASSWORD_INCLUDE_PATH);
   const navigate = useNavigate();
   const handleLoginWithGoogle = async () => {
     try {
@@ -52,18 +55,18 @@ const Auth = () => {
           <div className='space-y-6'>
             <Outlet />
           </div>
-          <div className='flex items-center justify-center gap-3 py-5'>
+          {!isHideFooter && <div className='flex items-center justify-center gap-3 py-5'>
             <hr className='w-1/2 border-gray-300' />
             <p>hoặc</p>
             <hr className='w-1/2 border-gray-300' />
-          </div>
-          <button
+          </div>}
+          {!isHideFooter && <button
             onClick={handleLoginWithGoogle}
             className='w-full font-medium  px-4 text-center border border-gray-300 rounded-md py-3 hover:bg-gray-200 cursor-pointer '
           >
             <GoogleOutlined className='text-primary text-xl text-center mr-1' />
             <span> Đăng nhập với google</span>
-          </button>
+          </button>}
         </div>
       </motion.div>
       <div className='hidden md:block overflow-hidden  '>
