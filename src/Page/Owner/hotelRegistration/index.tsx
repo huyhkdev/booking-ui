@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Form, Input, Select, Button, Upload, notification, Checkbox, Space, Image, Spin, Tooltip, Modal } from 'antd'
+import { Form, Input, Select, Button, Upload, notification, Checkbox, Space, Image, Spin, Tooltip } from 'antd'
 import { ArrowLeftOutlined, InfoCircleOutlined, UploadOutlined } from '@ant-design/icons'
 import useProvince from '../../../hooks/province/useProvince'
 import './HotelRegistration.pcss'
 import { httpErrorToToastAtr } from '../../../helpers/httpErrorToToastAtr'
 import { useNavigate } from 'react-router-dom'
 import { useHotelRegister } from '../../../hooks/owner'
+import { AddressGuideModal } from '../../../Components/Owner'
 
 const { Option } = Select
 
@@ -48,8 +49,8 @@ export const HotelRegistration = () => {
       fileList.forEach((file) => {
         formData.append('images', file.originFileObj)
       })
-      console.log(formData);
-      
+      console.log(formData)
+
       mutate(formData, {
         onSuccess: () => {
           notification.success({
@@ -209,13 +210,13 @@ export const HotelRegistration = () => {
               <div className='flex items-center space-x-2'>
                 <Input placeholder='Dán link Google Maps tại đây' size='large' />
                 <Tooltip title='Hướng dẫn lấy link Google Maps'>
-                    <button
+                  <button
                     type='button'
                     onClick={() => setIsModalOpen(true)}
                     className='text-blue-500 hover:text-blue-700 text-lg'
-                    >
+                  >
                     <InfoCircleOutlined style={{ fontSize: '18px' }} />
-                    </button>
+                  </button>
                 </Tooltip>
               </div>
             </Form.Item>
@@ -240,9 +241,7 @@ export const HotelRegistration = () => {
           </Space>
         </Space>
       </Form>
-      <Modal open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null} centered width={400}>
-        <img src='/image.png' alt='Hướng dẫn lấy địa chỉ' className='w-full h-auto rounded' />
-      </Modal>
+      <AddressGuideModal open={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
 }
