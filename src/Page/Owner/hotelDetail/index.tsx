@@ -1,14 +1,20 @@
-import { Spin, Typography } from 'antd'
-import { HomeOutlined, SafetyOutlined } from '@ant-design/icons'
-import { Rate } from 'antd'
-import { useParams } from 'react-router-dom'
+import { Breadcrumb, Layout, Menu, Spin } from 'antd'
+import { HomeOutlined, SettingOutlined, PieChartOutlined, InfoCircleOutlined } from '@ant-design/icons'
+import { Link, useParams } from 'react-router-dom'
 import { useOwnerHotelDetail } from '../../../hooks/owner'
+import { Header, Content } from 'antd/es/layout/layout'
+import { useState } from 'react'
+import type { BreadcrumbProps, MenuProps } from 'antd'
+import { HotelInfo } from '../../../Components/Owner'
+import { ListRoom } from '../../../Components/Owner/listRoom'
 
-const { Title } = Typography
+const { Sider } = Layout
 
 export const HotelDetail = () => {
   const { hotelId } = useParams<{ hotelId: string }>()
   const { data: hotel, isLoading } = useOwnerHotelDetail(hotelId as string)
+
+  const [selectedMenuKey, setSelectedMenuKey] = useState('1')
 
   if (isLoading || !hotel) {
     return (
@@ -18,76 +24,92 @@ export const HotelDetail = () => {
     )
   }
 
-  return (
-    <div className='main'>
-      <div className='container mx-auto my-5'>
-        <header className='flex justify-between items-center'>
-          <Title level={2}>{hotel?.name}</Title>
-          <Rate disabled defaultValue={hotel?.rating} />
-        </header>
+  const breadcrumbItems: BreadcrumbProps['items'] = [
+    {
+      title: <Link to='/owner/hotels'>Trang chủ</Link>
+    },
+    {
+      title: hotel.name
+    }
+  ]
 
-        <div className='grid grid-cols-5 gap-4'>
-          <div className='col-span-2'>
-            <img src={hotel?.images[0]} alt='Large' className='w-full h-full object-cover rounded-lg' />
-          </div>
-          <div className='col-span-3 grid grid-cols-2 gap-2'>
-            {hotel?.images
-              .slice(1, 6)
-              .map((img, idx) => <img key={idx} src={img} alt={`Image ${idx}`} className='w-full h-auto rounded-lg' />)}
-          </div>
-        </div>
+  const menuItems: MenuProps['items'] = [
+    {
+      key: '1',
+      icon: <InfoCircleOutlined />,
+      label: 'Thông tin chính'
+    },
+    {
+      key: '2',
+      icon: <HomeOutlined />,
+      label: 'Danh sách phòng'
+    },
+    {
+      key: '3',
+      icon: <PieChartOutlined />,
+      label: 'Thống kê'
+    },
+    {
+      key: '4',
+      icon: <SettingOutlined />,
+      label: 'Cài đặt'
+    }
+  ]
 
-        <div className='mt-5'>
-          <Title level={3}>
-            <HomeOutlined /> Giới thiệu
-          </Title>
-          <p>
-            <strong>Địa chỉ:</strong> {hotel?.address}, {hotel?.city}, {hotel?.country}
-          </p>
-          <p>
-            <strong>Loại:</strong> {hotel?.type}
-          </p>
-          <p>
-            <strong>Hạng sao:</strong> {hotel?.star} sao
-          </p>
-          <p>
-            <strong>Email:</strong> {hotel?.email}
-          </p>
-          <p>
-            <strong>Điện thoại:</strong> {hotel?.phoneNumber}
-          </p>
-          {hotel?.website && (
+  const renderContent = () => {
+    switch (selectedMenuKey) {
+      case '1':
+        return <HotelInfo hotel={hotel} />
+      case '2':
+        return (
+          <ListRoom rooms={hotel.rooms}/>
+        )
+      case '3':
+        return (
+          <div>
+            <h2 className='text-xl font-bold mb-4'>Thống kê người thuê</h2>
             <p>
-              <strong>Website:</strong>{' '}
-              <a href={hotel.website} target='_blank' rel='noreferrer'>
-                {hotel.website}
-              </a>
+              {/* <strong>Tổng lượt đánh giá:</strong> {hotel.reviews?.length} */}
+              <p>Chức năng đang phát triển...</p>
             </p>
-          )}
-        </div>
+          </div>
+        )
+      case '4':
+        return (
+          <div>
+            <h2 className='text-xl font-bold mb-4'>Cài đặt</h2>
+            <p>Chức năng đang phát triển...</p>
+          </div>
+        )
+      default:
+        return null
+    }
+  }
 
-        {/* Description */}
-        <div className='mt-5'>
-          <Title level={4}>Mô tả ngắn</Title>
-          <p>{hotel?.description}</p>
-          <Title level={4}>Mô tả chi tiết</Title>
-          <p>{hotel?.longDescription}</p>
+  return (
+    <Layout className='min-h-screen'>
+      <Sider breakpoint='lg' collapsedWidth='0' className='!bg-white'>
+        <div className='text-center py-4 border-b'>
+          <img src={hotel.images[0]} alt='Hotel Logo' className='h-16 mx-auto' />
         </div>
+        <Menu
+          theme='light'
+          mode='inline'
+          selectedKeys={[selectedMenuKey]}
+          onClick={(e) => setSelectedMenuKey(e.key)}
+          items={menuItems}
+        />
+      </Sider>
 
-        {/* Amenities */}
-        <div className='mt-5 border-t border-b py-3'>
-          <Title level={3}>
-            <SafetyOutlined /> Tiện nghi
-          </Title>
-          <ul className='list-disc pl-5'>
-            {hotel?.amenities.map((amenity, idx) => (
-              <li key={idx} className='text-lg'>
-                {amenity}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
+      <Layout>
+        <Header className='bg-white shadow px-4 content-center'>
+          <Breadcrumb items={breadcrumbItems} />
+        </Header>
+
+        <Content className='p-6 bg-gray-100'>
+          <div className='bg-white rounded-xl p-6 shadow'>{renderContent()}</div>
+        </Content>
+      </Layout>
+    </Layout>
   )
 }

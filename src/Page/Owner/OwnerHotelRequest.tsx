@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
-import { FileChangeEvent, OwnerUploadCV } from '../../Components/Owner'
-import { notification, Spin } from 'antd'
+import { FileChangeEvent, OwnerUploadHotelInfo } from '../../Components/Owner'
+import { Button, notification, Spin } from 'antd'
 import { httpErrorToToastAtr } from '../../helpers/httpErrorToToastAtr'
 import { useInfoRequestOwner, useOwnerRegister } from '../../hooks/owner'
 import { useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export const OwnerHotelRequest = () => {
   const navigate = useNavigate()
@@ -13,7 +14,6 @@ export const OwnerHotelRequest = () => {
 
   const { mutate, isPending } = useOwnerRegister()
   const { data: infor, isLoading } = useInfoRequestOwner()
-
   const inforRequest = infor?.data?.data?.infoRequest
 
   const handleFileChange = (e: FileChangeEvent) => {
@@ -21,7 +21,7 @@ export const OwnerHotelRequest = () => {
     if (selectedFile && selectedFile.type === 'application/pdf') {
       setFile(selectedFile)
     } else {
-      alert('Please upload a valid PDF file.')
+      notification.error({ message: 'Vui lòng tải lên tệp PDF hợp lệ.' })
     }
   }
 
@@ -32,24 +32,19 @@ export const OwnerHotelRequest = () => {
       mutate(formData, {
         onSuccess: () => {
           notification.success({
-            message: 'CV của bạn đã được tải lên thành công!',
-            description: 'Cảm ơn bạn đã gửi CV. Chúng tôi sẽ xem xét và liên hệ với bạn trong thời gian sớm nhất.'
+            message: 'Tệp đã được tải lên thành công!',
+            description: 'Chúng tôi sẽ xem xét thông tin và phản hồi trong thời gian sớm nhất.'
           })
           window.location.reload()
         },
         onError: (error) => {
-          console.log(error)
-
           const [message, description] = httpErrorToToastAtr(error)
-          notification.error({
-            message,
-            description
-          })
+          notification.error({ message, description })
         }
       })
     } else {
       notification.error({
-        message: 'Please upload a valid CV file.'
+        message: 'Vui lòng tải lên tệp PDF hợp lệ.'
       })
     }
   }
@@ -61,11 +56,12 @@ export const OwnerHotelRequest = () => {
     } else {
       setUserRole(user.role)
     }
+
     if (!isLoading) {
       inforRequest?.status ? setIsPopupVisible(false) : setIsPopupVisible(true)
     }
   }, [inforRequest])
-  
+
   if (isLoading) {
     return (
       <div className='flex justify-center items-center h-screen'>
@@ -75,36 +71,50 @@ export const OwnerHotelRequest = () => {
   }
 
   return (
-    <div className='container mx-auto p-5'>
-      <h1 className='text-2xl font-bold mb-4'>Đăng khách sạn</h1>
+    <div className='container mx-auto p-5 min-h-screen'>
+      <h1 className='text-3xl font-bold mb-6 text-center'>Đăng Ký Làm Chủ Khách Sạn</h1>
 
-      {userRole === 'user' &&
-        (!inforRequest?.status ? (
-          <>
-            <div className='alert alert-warning'>Bạn cần đăng ký trở thành chủ sở hữu để có thể đăng khách sạn.</div>
-            <button
-              onClick={() => setIsPopupVisible(true)}
-              className='bg-primary rounded-md text-white p-2 mt-2 hover:bg-primary/90'
-            >
-              Đăng Ký Ngay
-            </button>
-          </>
-        ) : (
-          <>
-            <div className='alert alert-warning'>
-              Hồ sơ của bạn đang được chờ duyệt, vui lòng chờ để chúng tôi kiểm tra thông tin của bạn.
+      {userRole === 'user' && (
+        <div className='flex flex-col items-center'>
+          {!inforRequest?.status ? (
+            <>
+              <div className='bg-yellow-100 text-yellow-800 px-4 py-3 rounded-md w-full max-w-md text-center mb-4'>
+                Bạn cần đăng ký trở thành chủ sở hữu để có thể đăng khách sạn.
+              </div>
+              <Button
+                onClick={() => setIsPopupVisible(true)}
+                className='bg-blue-600 hover:bg-blue-700 transition-colors text-white px-6 py-2 rounded-md'
+              >
+                Đăng Ký Ngay
+              </Button>
+            </>
+          ) : (
+            <div className='bg-yellow-100 text-yellow-800 px-4 py-3 rounded-md w-full max-w-md text-center'>
+              Hồ sơ của bạn đang được chờ duyệt. Vui lòng chờ để chúng tôi kiểm tra thông tin.
             </div>
-          </>
-        ))}
-
-      {isPopupVisible && userRole !== 'owner' && (
-        <OwnerUploadCV
-          handleFileChange={handleFileChange}
-          handleSubmit={handleSubmit}
-          setIsPopupVisible={setIsPopupVisible}
-          isLoading={isPending}
-        />
+          )}
+        </div>
       )}
+
+      <AnimatePresence>
+        {isPopupVisible && userRole !== 'owner' && (
+          <motion.div
+            key='popup'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            className='fixed inset-0 z-50'
+          >
+            <OwnerUploadHotelInfo
+              handleFileChange={handleFileChange}
+              handleSubmit={handleSubmit}
+              setIsPopupVisible={setIsPopupVisible}
+              isLoading={isPending}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

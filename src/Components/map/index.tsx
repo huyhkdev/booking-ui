@@ -77,7 +77,6 @@ const MapSection = () => {
       <MapContainer
         center={userPosition}
         zoom={15}
-        scrollWheelZoom={true}
         style={{ height: "80vh", width: "100%" }}
         maxBounds={vietnamBounds}
         maxBoundsViscosity={0.8}
