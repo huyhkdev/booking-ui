@@ -20,7 +20,7 @@ const Header = () => {
         {isHidden && <></>}
         {!isHidden && (
           <>
-            <Nav />
+            {/* <Nav /> */}
             <InforHeader />
           </>
         )}
