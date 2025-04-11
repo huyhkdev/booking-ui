@@ -1,2 +1,6 @@
 export * from './uploadFile'
-export * from './hotelInfo'
+export * from './hotelDetail/hotelInfo'
+export * from './hotelDetail/listRooms'
+export * from './siderBarItems'
+export * from './listHotels'
+export * from './addressGuide'

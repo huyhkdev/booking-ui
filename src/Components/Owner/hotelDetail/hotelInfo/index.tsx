@@ -1,6 +1,6 @@
 import { Card, Descriptions, Image, Space, Tag, Typography } from 'antd'
 import { motion } from 'framer-motion'
-import { Hotel } from '../../../hooks/owner'
+import { Hotel } from '../../../../hooks/owner'
 import { MailOutlined, PhoneOutlined, GlobalOutlined, StarOutlined, EnvironmentOutlined } from '@ant-design/icons'
 
 const { Title, Paragraph, Link: AntLink } = Typography
@@ -78,23 +78,23 @@ export const HotelInfo = ({ hotel }: HotelInfoProps) => {
           </Descriptions.Item>
 
           <Descriptions.Item label='Tiện nghi'>
-            <Space>
+            <div className='flex flex-wrap gap-2 max-h-28 overflow-y-auto'>
               {hotel.amenities?.map((item) => (
                 <Tag key={item} color='cyan'>
                   {item}
                 </Tag>
               ))}
-            </Space>
+            </div>
           </Descriptions.Item>
         </Descriptions>
       </Card>
 
       <Card className='shadow-md rounded-2xl' bordered={false}>
         <Title level={5}>Mô tả ngắn</Title>
-        <Paragraph>{hotel.description ? hotel.description : "Chưa có mô tả"}</Paragraph>
+        <Paragraph>{hotel.description ? hotel.description : 'Chưa có mô tả'}</Paragraph>
 
         <Title level={5}>Mô tả chi tiết</Title>
-        <Paragraph>{hotel.longDescription}</Paragraph>
+        <Paragraph>{hotel.longDescription ? hotel.longDescription : 'Chưa có mô tả'}</Paragraph>
       </Card>
       <Card title={<Title level={5}>Ảnh nổi bật của khách sạn</Title>} bordered={false} className='shadow-md'>
         {hotel.images && hotel.images.length > 0 && (

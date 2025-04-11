@@ -1,7 +1,7 @@
 import { Card, Empty, Button, Space, Tag, Typography, Image } from 'antd'
 import { PlusOutlined, UserOutlined, DollarOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons'
 import { motion } from 'framer-motion'
-import { Room } from '../../../hooks/room/useSearchRoom'
+import { Room } from '../../../../hooks/room/useSearchRoom'
 
 const { Title, Paragraph } = Typography
 
