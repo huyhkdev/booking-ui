@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Form, Input, Select, Button, Upload, notification, Checkbox, Space, Image, Spin } from 'antd'
-import { UploadOutlined } from '@ant-design/icons'
+import { Form, Input, Select, Button, Upload, notification, Checkbox, Space, Image, Spin, Tooltip, Modal } from 'antd'
+import { ArrowLeftOutlined, InfoCircleOutlined, UploadOutlined } from '@ant-design/icons'
 import useProvince from '../../../hooks/province/useProvince'
 import './HotelRegistration.pcss'
 import { httpErrorToToastAtr } from '../../../helpers/httpErrorToToastAtr'
@@ -26,6 +26,7 @@ export const HotelRegistration = () => {
   const { mutate, isPending } = useHotelRegister()
   const [form] = Form.useForm()
   const [fileList, setFileList] = useState<any[]>([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleFileChange = (info: any) => {
     setFileList(info.fileList)
@@ -47,7 +48,8 @@ export const HotelRegistration = () => {
       fileList.forEach((file) => {
         formData.append('images', file.originFileObj)
       })
-
+      console.log(formData);
+      
       mutate(formData, {
         onSuccess: () => {
           notification.success({
@@ -95,7 +97,15 @@ export const HotelRegistration = () => {
 
   return (
     <div className='container mx-auto p-5'>
-      <h1 className='text-2xl font-bold mb-4'>Đăng ký khách sạn</h1>
+      <div className='flex gap-5 items-center mb-4'>
+        <Tooltip title='Quay lại'>
+          <ArrowLeftOutlined
+            onClick={() => navigate(-1)}
+            className='text-xl cursor-pointer hover:text-blue-600 transition'
+          />
+        </Tooltip>
+        <h1 className='text-2xl font-bold'>Đăng ký khách sạn</h1>
+      </div>
 
       <Form form={form} onFinish={handleSubmit} layout='vertical' className='size-8/12 mx-auto'>
         <Space className='flex justify-between'>
@@ -141,6 +151,10 @@ export const HotelRegistration = () => {
                 </Select>
               </Form.Item>
             </Space>
+
+            <Form.Item label='Mô tả ngắn' name='description'>
+              <Input placeholder='Nhập mô tả chi tiết về khách sạn' size='large' />
+            </Form.Item>
 
             <Form.Item label='Mô tả chi tiết' name='longDescription'>
               <Input.TextArea placeholder='Nhập mô tả chi tiết về khách sạn' size='large' />
@@ -191,6 +205,21 @@ export const HotelRegistration = () => {
               </Upload>
             </Form.Item>
 
+            <Form.Item label='Link Map' name='mapLink' className='mb-0' tooltip='Dán link Google Maps sau khi sao chép'>
+              <div className='flex items-center space-x-2'>
+                <Input placeholder='Dán link Google Maps tại đây' size='large' />
+                <Tooltip title='Hướng dẫn lấy link Google Maps'>
+                    <button
+                    type='button'
+                    onClick={() => setIsModalOpen(true)}
+                    className='text-blue-500 hover:text-blue-700 text-lg'
+                    >
+                    <InfoCircleOutlined style={{ fontSize: '18px' }} />
+                    </button>
+                </Tooltip>
+              </div>
+            </Form.Item>
+
             <Form.Item label='Tiện nghi' name='amenities'>
               <Checkbox.Group>
                 <Space className='flex flex-wrap gap-6'>
@@ -211,6 +240,9 @@ export const HotelRegistration = () => {
           </Space>
         </Space>
       </Form>
+      <Modal open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null} centered width={400}>
+        <img src='/image.png' alt='Hướng dẫn lấy địa chỉ' className='w-full h-auto rounded' />
+      </Modal>
     </div>
   )
 }
