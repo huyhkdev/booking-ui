@@ -5,14 +5,14 @@ export interface FileChangeEvent extends React.ChangeEvent<HTMLInputElement> {
   target: HTMLInputElement & { files: FileList }
 }
 
-interface OwnerUploadCVProps {
+interface OwnerUploadHotelInfoProps {
   handleFileChange: (event: FileChangeEvent) => void
   handleSubmit: () => void
   setIsPopupVisible: (isVisible: boolean) => void
   isLoading?: boolean
 }
 
-export const OwnerUploadCV: React.FC<OwnerUploadCVProps> = ({
+export const OwnerUploadHotelInfo: React.FC<OwnerUploadHotelInfoProps> = ({
   handleFileChange,
   handleSubmit,
   setIsPopupVisible,
@@ -40,20 +40,20 @@ export const OwnerUploadCV: React.FC<OwnerUploadCVProps> = ({
   return (
     <div className='fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50'>
       <div className='bg-white p-6 rounded-lg shadow-lg w-96'>
-        <h2 className='text-xl font-bold mb-4'>Upload your CV</h2>
+        <h2 className='text-xl font-bold mb-4'>Tải lên thông tin khách sạn</h2>
 
         <p className='text-sm text-gray-700 mb-4'>
-          You need to upload your CV in order to register as an owner. Please upload a valid PDF to proceed.
+          Bạn cần tải lên thông tin khách sạn để đăng ký làm chủ khách sạn. Vui lòng tải lên tệp PDF hợp lệ để tiếp tục.
         </p>
 
         <div>
           <label
-            htmlFor='cvFile'
+            htmlFor='hotelInfoFile'
             className='cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-md text-center w-full mb-4 flex justify-center items-center'
           >
-            Select CV File
+            Chọn tệp thông tin
           </label>
-          <input id='cvFile' type='file' accept='.pdf' onChange={onFileChange} className='hidden' />
+          <input id='hotelInfoFile' type='file' accept='.pdf' onChange={onFileChange} className='hidden' />
 
           {fileName && <p className='text-sm mb-4'>{fileName}</p>}
 
@@ -65,14 +65,14 @@ export const OwnerUploadCV: React.FC<OwnerUploadCVProps> = ({
 
           <div className='flex justify-between items-center'>
             <Button loading={isLoading} onClick={handleSubmit} className='text-white px-4 py-2 rounded'>
-              Upload
+              Tải lên
             </Button>
             <button
               type='button'
               onClick={() => setIsPopupVisible(false)}
               className='bg-gray-500 text-white px-4 py-2 rounded'
             >
-              Close
+              Đóng
             </button>
           </div>
         </div>

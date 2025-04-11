@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import api from '../../api/api'
 import { baseURL } from '../../api/constant'
 import { useAccessToken } from '../auth/useUserInfo'
+import { Room } from '../room/useSearchRoom'
 export interface Review {
   _id: string
   user: string
@@ -23,7 +24,7 @@ export interface Hotel {
   star: number
   description: string
   longDescription: string
-  rooms: string[]
+  rooms: Room[]
   type: string
   amenities: string[]
   phoneNumber: string
