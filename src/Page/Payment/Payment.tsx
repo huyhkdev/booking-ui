@@ -1,12 +1,17 @@
 import { DatePicker, Form, Input } from 'antd'
 import { CreateOrderBooking } from '../../hooks/room/types'
 import moment from 'moment'
-import { motion } from 'framer-motion'
+import { differenceInDays } from 'date-fns';
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import { useParams, useSearchParams } from 'react-router-dom';
 export default function Payment({ rooms }) {
   const [form] = Form.useForm()
   const [roomQuantities, setRoomQuantities] = useState([])
+  const [searchParams] = useSearchParams();
+
+  const checkOutDate = searchParams.get('checkOutDate');
+  const checkInDate = searchParams.get('checkInDate');
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const checkInDate = params.get('checkInDate')
@@ -84,37 +89,19 @@ export default function Payment({ rooms }) {
   })
   const totalPrice = rooms.reduce((total: number, room: any) => {
     const quantity = roomQuantities[room._id] || 0
-    return total + room.pricePerNight * quantity
+    return total + (room.pricePerNight * differenceInDays(new Date(checkOutDate as string), new Date(checkInDate as string))) * quantity
   }, 0)
-  const findRoomByName =(name: string)=> rooms?.find(room => room.name === name );
+  const findRoomByName = (name: string) => rooms?.find(room => room.name === name);
   return (
     <div className='main'>
       {/* <h3 className='font-bold text-4xl m-10'>Phòng Trống</h3> */}
       <Form form={form} onFinish={handleSearchRoom}>
-        <div className='bg-white font-bold rounded-lg shadow-lg border-4 border-black mx-56'>
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-4 p-3'>
-            <div>
-              <span className='text-gray-700 mb-1 block'>Ngày đặt Phòng</span>
-              <Form.Item name='checkInDate' rules={[{ required: true, message: 'Vui lòng chọn ngày check-in!' }]}>
-                <DatePicker className='w-full' format='DD/MM/YYYY' />
-              </Form.Item>
-            </div>
-            <div>
-              <span className='text-gray-700 mb-1 block'>Ngày trả phòng</span>
-              <Form.Item name='checkOutDate' rules={[{ required: true, message: 'Vui lòng chọn ngày check-out!' }]}>
-                <DatePicker className='w-full' format='DD/MM/YYYY' />
-              </Form.Item>
-            </div>
-            <div>
-              <span className='text-gray-700 mb-1 block '>Số lượng khách</span>
-              <div className='flex gap-4 w-full'>
-                <Form.Item name='capacity' rules={[{ required: true, message: 'Vui lòng chọn số lượng khách!' }]}>
-                  <Input placeholder='số lượng khách' type='number' min={0} className='w-full' />
-                </Form.Item>
-              </div>
-            </div>
-          </div>
-        </div>
+      <Form.Item hidden name='checkInDate' rules={[{ required: true, message: 'Vui lòng chọn ngày check-in!' }]}>
+            <DatePicker className='w-full' format='DD/MM/YYYY' />
+          </Form.Item>
+          <Form.Item hidden name='checkOutDate' rules={[{ required: true, message: 'Vui lòng chọn ngày check-out!' }]}>
+            <DatePicker className='w-full' format='DD/MM/YYYY' />
+          </Form.Item>
         <h4 className='font-bold text-3xl mt-10  '>Tất Cả Các Loại Chỗ Nghỉ</h4>
         <div className='body_main'>
           <div className='form_detail_room'>
@@ -124,26 +111,26 @@ export default function Payment({ rooms }) {
               <div className='heading_room_value'>Số Lượng Phòng</div>
             </div>
             <div className='body_room'>
-          { [...countMap.keys()].map( key => {
-            const targetRoom = findRoomByName(key);
-          return  <div key={key} className='body_room_total'>
-            <div className='body_room_value'>
-             { `${key} (Tối đa ${targetRoom.capacity} Người)`}
-            </div>
-            <div className='body_room_value'>{Number(targetRoom.pricePerNight).toLocaleString()} VND</div>
-            <Input
-              suffix={"còn " +countMap.get(key) + " phòng"}
-              placeholder='số lượng phòng'
-              type='number'
-              min={1}
-              max={countMap.get(key)}
-              className='w-[30%] mr-10'
-              onChange={(e) => handleQuantityChange(targetRoom._id , Number(e.target.value))}
-            />
-          </div>
+              {[...countMap.keys()].map(key => {
+                const targetRoom = findRoomByName(key);
+                return <div key={key} className='body_room_total'>
+                  <div className='body_room_value'>
+                    {`${key} (Tối đa ${targetRoom.capacity} Người)`}
+                  </div>
+                  <div className='body_room_value'>{Number(targetRoom.pricePerNight).toLocaleString()} VND</div>
+                  <Input
+                    suffix={"còn " + countMap.get(key) + " phòng"}
+                    placeholder='số lượng phòng'
+                    type='number'
+                    min={1}
+                    max={countMap.get(key)}
+                    className='w-[30%] mr-10'
+                    onChange={(e) => handleQuantityChange(targetRoom._id, Number(e.target.value))}
+                  />
+                </div>
 
 
-          }) }
+              })}
 
             </div>
           </div>
