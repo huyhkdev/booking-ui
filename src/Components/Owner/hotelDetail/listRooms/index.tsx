@@ -7,12 +7,14 @@ const { Title, Paragraph } = Typography
 
 interface ListRoomProps {
   rooms: Room[]
-  onAddRoom?: () => void
 }
 
-export const ListRoom = ({ rooms, onAddRoom }: ListRoomProps) => {
+export const ListRoom = ({ rooms }: ListRoomProps) => {
     console.log(rooms);
-    
+    const onAddRoom = () => {
+      console.log("add");
+      
+    }
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

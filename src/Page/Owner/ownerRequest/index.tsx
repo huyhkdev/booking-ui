@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { FileChangeEvent, OwnerUploadHotelInfo } from '../../Components/Owner'
+import { FileChangeEvent, OwnerUploadHotelInfo } from '../../../Components/Owner'
 import { Button, notification, Spin } from 'antd'
-import { httpErrorToToastAtr } from '../../helpers/httpErrorToToastAtr'
-import { useInfoRequestOwner, useOwnerRegister } from '../../hooks/owner'
+import { httpErrorToToastAtr } from '../../../helpers/httpErrorToToastAtr'
+import { useInfoRequestOwner, useOwnerRegister } from '../../../hooks/owner'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 

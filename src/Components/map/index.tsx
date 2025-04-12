@@ -35,7 +35,7 @@ const MapSection = () => {
       },
       (err) => {
         console.error('Lỗi lấy vị trí:', err)
-        setUserPosition([16.0544, 108.2022]) // fallback Đà Nẵng
+        setUserPosition([16.0544, 108.2022])
         setIsRealPosition(false)
       },
       {
@@ -53,7 +53,6 @@ const MapSection = () => {
       </div>
     )
   }
-  console.log(hotels)
 
   const validHotels = (hotels || []).filter((h) => {
     const lat = parseFloat(h.latitude)

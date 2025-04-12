@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Form, Input, Select, Button, Upload, notification, Checkbox, Space, Image, Spin, Tooltip } from 'antd'
+import { Form, Input, Select, Button, Upload, notification, Checkbox, Space, Image, Spin, Tooltip, Rate } from 'antd'
 import { ArrowLeftOutlined, InfoCircleOutlined, UploadOutlined } from '@ant-design/icons'
 import useProvince from '../../../hooks/province/useProvince'
 import './HotelRegistration.pcss'
@@ -231,6 +231,13 @@ export const HotelRegistration = () => {
                   ))}
                 </Space>
               </Checkbox.Group>
+            </Form.Item>
+            <Form.Item
+              label='Xếp hạng sao'
+              name='star'
+              rules={[{ required: true, message: 'Vui lòng chọn số sao cho khách sạn!' }]}
+            >
+              <Rate allowClear allowHalf />
             </Form.Item>
 
             <Form.Item>
