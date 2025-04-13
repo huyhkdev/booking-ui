@@ -1,7 +1,5 @@
-import { Button, DatePicker, Form, Input, Typography } from 'antd'
+import { Typography } from 'antd'
 import {
-  HeartOutlined,
-  VerticalAlignBottomOutlined,
   HomeOutlined,
   WifiOutlined,
   CoffeeOutlined,
@@ -10,7 +8,7 @@ import {
 import { Rate } from 'antd'
 
 import Payment from '../Payment/Payment'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import LoadingElement from '../../Components/LoadingElement'
@@ -20,13 +18,14 @@ const RoomDetails = () => {
   const { hotelId } = useParams<{ hotelId: string }>();
   const params = new URLSearchParams(window.location.search)
   const checkInDate = params.get('checkInDate')
-  const [hotel, setHotel] = useState(null)
+  const checkOutDate = params.get('checkOutDate')
+  const [hotel, setHotel] = useState<any>(null)
   const [rooms, setRooms] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   useEffect(() => {
     const fetchHotelDetails = async () => {
       try {
-        const hotelData = await axios.get(`http://localhost:4000/api/v1/hotels/${hotelId}?checkInDate=${checkInDate}`)
+        const hotelData = await axios.get(`http://localhost:4000/api/v1/hotels/${hotelId}?checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`)
         setHotel(hotelData.data.data)
         setRooms(hotelData.data.data.rooms)
         setIsLoading(false)
@@ -78,69 +77,13 @@ const RoomDetails = () => {
                 <Title level={5}>{hotel?.amenities[3]}</Title>
               </div>
               {/* New amenities section */}
-              <div className='mt-3 border-y border-black py-2'>
-                <Title level={3}>
-                  <SafetyOutlined /> Tiện nghi khách có quyền sử dụng
-                </Title>
-                <div className='mt-2 space-y-2 '>
-                  {/* Added margin and vertical spacing */}
-                  <Title level={4}>
-                    <WifiOutlined className='text-xl mr-2' /> Wi-fi
-                  </Title>
-                  <Title level={4}>
-                    <CoffeeOutlined className='text-xl mr-2' /> Máy Nespresso
-                  </Title>
-                  <Title level={4}>
-                    <HomeOutlined className='text-xl mr-2' /> Tủ lạnh
-                  </Title>
-                  <Title level={4}>
-                    <SafetyOutlined className='text-xl mr-2' /> Hệ thống sưởi trung tâm
-                  </Title>
-                </div>
-              </div>
               {/* New host section */}
               <h3 className='text-lg font-bold'>Mô tả</h3>
 
               <Title level={5}>{hotel?.longDescription}</Title>
             </div>
             {/* Infor */}
-            {/* <div className='col-span-1'>
-              <Form action='' className='border rounded-lg p-3'>
-                <div className='flex items-center gap-1'>
-                  <Title level={3}>190.000đ</Title>
-                  <span className='text-lg mb-2'>/đêm</span>
-                </div>
-                <div className='grid grid-cols-2  border hover:border-black rounded-lg'>
-                  <div className='border-r p-2 col-span-1'>
-                    <h3 className='text-md font-bold '>NHẬN PHÒNG</h3>
-                    <span>17/08/2003</span>
-                  </div>
-                  <div className=' p-2 col-span-1 '>
-                    <h3 className='text-md font-bold '>NHẬN PHÒNG</h3>
-                    <span>17/08/2003</span>
-                  </div>
-                </div>
-                <div className='grid grid-cols-2  border hover:border-black rounded-lg'>
-                  <div className=' p-2 col-span-1'>
-                    <h3 className='text-md font-bold '>KHÁCH</h3>
-                    <span>1</span>
-                  </div>
-                </div>
 
-                <Button type='primary' htmlType='submit' className='my-3 w-full '>
-                  Đặt phòng
-                </Button>
-                <div className='flex items-center gap-1'>
-                  <Title level={5}>Phí vệ sinh: 10.000đ</Title>
-                </div>
-                <div className='flex items-center gap-1'>
-                  <Title level={5}>Phí dịch vụ: 20.000đ</Title>
-                </div>
-                <div className='flex items-center gap-1 border-t'>
-                  <Title level={4}>Tổng tiền: 220.000đ</Title>
-                </div>
-              </Form>
-            </div> */}
           </div>
           <Payment rooms={rooms} />
           {/* New reviews section */}

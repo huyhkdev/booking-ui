@@ -8,6 +8,7 @@ import { userUpdateProfile } from '../../hooks/auth/userUpdateProfile'
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { useUploadAvatar } from '../../hooks/auth/useUploadAvatar'
+import { useUserBooking } from '../../hooks/booking/getUserBooking'
 const USER_ACTIVE_STATE = "active";
 const Gender = {
   'male': "Nam",
@@ -18,10 +19,13 @@ const Profile = () => {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const token = useAccessToken();
+
   const { data, isLoading } = useGetUserProfile(token as string);
   const userDetails = data?.data?.data;
   const [userEdit, setUserEdit] = useState<any>(userDetails);
-
+  const { data: bookingData, isLoading: bookingLoading } = useUserBooking(token as string);
+  const bookings = bookingData?.data.data;
+  console.log(bookings)
   const { mutate: uploadMutate, isPending: uploadingPending } = useUploadAvatar(token as string);
   const handleAvatarChange = (e: any) => {
     uploadMutate(e.target.files[0], {
@@ -206,6 +210,80 @@ const Profile = () => {
 
       </div>
 
+
+
+
+      <div className="p-5">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">📝 Lịch sử đặt phòng</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {bookings?.map((booking: any) => {
+            const renderButton = () => {
+              if (new Date() >= new Date(booking.checkOutDate)) {
+                return <button className="mt-4 w-full py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
+                  Đánh giá
+                </button>
+              } else {
+                return <button className="mt-4 w-full py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
+                  AI gợi ý lịch trình
+                </button>
+              }
+            }
+            return (
+              <div
+                key={booking._id}
+                className="border rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white overflow-hidden"
+              >
+                {/* Ảnh phòng */}
+                <img
+                  src={booking.room[0].images[0]}
+                  alt="room"
+                  className="w-full h-48 object-cover"
+                />
+
+                {/* Nội dung chi tiết */}
+                <div className="p-5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xl font-semibold text-primary">{booking.room[0].name}</p>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full font-medium ${booking.status === 'confirmed'
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-yellow-100 text-yellow-700'
+                        }`}
+                    >
+                      {booking.status === 'confirmed' ? 'Đã xác nhận' : booking.status}
+                    </span>
+                  </div>
+
+                  <p className="text-gray-600 text-sm">🏨 {booking.room[0].hotel.name}</p>
+
+                  <div className="text-sm text-gray-700 space-y-1 mt-3">
+                    <p>
+                      📅 <span className="font-medium">Nhận phòng:</span>{' '}
+                      {new Date(booking.checkInDate).toLocaleDateString('vi-VN')}
+                    </p>
+                    <p>
+                      📤 <span className="font-medium">Trả phòng:</span>{' '}
+                      {new Date(booking.checkOutDate).toLocaleDateString('vi-VN')}
+                    </p>
+                    <p>
+                      👥 <span className="font-medium">Khách:</span> {booking.totalGuests}
+                    </p>
+                    <p>
+                      💰 <span className="font-medium">Tổng tiền:</span>{' '}
+                      <span className="text-primary font-semibold">
+                        {booking.totalPrice.toLocaleString('vi-VN')}₫
+                      </span>
+                    </p>
+                  </div>
+
+                  {renderButton()}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
 
     </div>
   )

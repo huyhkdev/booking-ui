@@ -5,6 +5,11 @@ import Image from '../../assets/ImageHome.png'
 import Section from './Section'
 import FormSearch from './FormSeach'
 import MapSection from '../../Components/map'
+const CityImageMap = {
+  "Hội An": "https://i2.ex-cdn.com/crystalbay.com/files/content/2024/06/03/du-lich-hoi-an-1-1542.jpg",
+  "Hạ Long Bay": "https://vcdn1-dulich.vnecdn.net/2022/05/07/vinhHaLongQuangNinh-1651912066-8789-1651932294.jpg?w=0&h=0&q=100&dpr=2&fit=crop&s=bAYE9-ifwt-9mB2amIjnqg",
+  "Sapa": "https://www.getvisavietnam.com/wp-content/uploads/2023/06/Y-Linh-Ho-Village-Sapa.jpg"
+}
 const Home = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -91,7 +96,7 @@ const Home = () => {
         <div className='container mx-auto px-4'>
           <h2 className='text-3xl font-bold mb-8 text-center'>Điểm Đến Nổi Bật</h2>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            {['Hạ Long Bay', 'Hội An', 'Sapa'].map((place, index) => (
+            {(['Hạ Long Bay', 'Hội An', 'Sapa'] as Array<keyof typeof CityImageMap>).map((place, index) => (
               <motion.div
                 key={place}
                 className='bg-white rounded-lg shadow-lg overflow-hidden'
@@ -99,7 +104,7 @@ const Home = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <img src={Image} alt={place} className='w-full h-48 object-cover' />
+                <img src={CityImageMap[place]} alt={place} className='w-full h-48 object-cover' />
                 <div className='p-6'>
                   <h3 className='text-xl font-bold mb-2'>{place}</h3>
                   <p className='text-gray-600'>Khám phá vẻ đẹp độc đáo và văn hóa phong phú của {place}</p>
@@ -111,28 +116,7 @@ const Home = () => {
       </section>
 
       {/* Special Offers Section */}
-      <section className='py-16 bg-gray-100'>
-        <div className='container mx-auto px-4'>
-          <h2 className='text-3xl font-bold mb-8 text-center'>Ưu Đãi Đặc Biệt</h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-8'>
-            {['Giảm giá mùa hè', 'Combo tiết kiệm'].map((offer, index) => (
-              <motion.div
-                key={offer}
-                className='bg-white rounded-lg shadow-lg p-6'
-                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <h3 className='text-xl font-bold mb-4'>{offer}</h3>
-                <p className='text-gray-600 mb-4'>Mô tả ngắn về ưu đãi đặc biệt này...</p>
-                <button className='bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition'>
-                  Xem chi tiết
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -147,18 +131,30 @@ const Home = () => {
         <div className='container mx-auto px-4'>
           <h2 className='text-3xl font-bold mb-8 text-center'>Khách Hàng Nói Gì</h2>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
-            {[1, 2, 3].map((_, index) => (
-              <motion.div
-                key={index}
-                className='bg-white rounded-lg shadow-lg p-6'
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <p className='text-gray-600 mb-4'>"Trải nghiệm tuyệt vời! Tôi sẽ quay lại Việt Nam..."</p>
-                <p className='font-bold'>- Khách hàng {index + 1}</p>
-              </motion.div>
-            ))}
+            <motion.div
+              className='bg-white rounded-lg shadow-lg p-6'
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p className='text-gray-600 mb-4'>"Đặt phòng trên BTravel cực kỳ dễ dàng và nhanh chóng! Chỉ vài cú nhấp chuột là tôi đã có chỗ nghỉ ưng ý tại Đà Nẵng."</p>
+              <p className='font-bold'>Emily Nguyen, Mỹ</p>
+            </motion.div>
+            <motion.div
+              className='bg-white rounded-lg shadow-lg p-6'
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p className='text-gray-600 mb-4'>"Tôi rất ấn tượng với giao diện thân thiện và dịch vụ hỗ trợ 24/7 của BTravel. Sẽ tiếp tục dùng trong các chuyến đi tới!"</p>
+              <p className='font-bold'>Kenji Yamamoto, Nhật Bản</p>
+            </motion.div>
+            <motion.div
+              className='bg-white rounded-lg shadow-lg p-6'
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <p className='text-gray-600 mb-4'>"Giá cả rõ ràng, nhiều lựa chọn phong phú – BTravel giúp chuyến du lịch Việt Nam của tôi trở nên suôn sẻ hơn bao giờ hết!"</p>
+              <p className='font-bold'> Sophie Dubois, Pháp</p>
+            </motion.div>
           </div>
         </div>
       </section>
