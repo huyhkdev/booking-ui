@@ -4,14 +4,16 @@ import moment from 'moment'
 import { differenceInDays } from 'date-fns';
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { useParams, useSearchParams } from 'react-router-dom';
-export default function Payment({ rooms }) {
+import {  useSearchParams } from 'react-router-dom';
+import { useAccessToken } from '../../hooks/auth/useUserInfo';
+export default function Payment({ rooms }: any) {
   const [form] = Form.useForm()
-  const [roomQuantities, setRoomQuantities] = useState([])
+  const [roomQuantities, setRoomQuantities] = useState<any>([])
   const [searchParams] = useSearchParams();
-
+  const token = useAccessToken();
   const checkOutDate = searchParams.get('checkOutDate');
   const checkInDate = searchParams.get('checkInDate');
+  const capacity = searchParams.get('capacity');
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const checkInDate = params.get('checkInDate')
@@ -46,11 +48,17 @@ export default function Payment({ rooms }) {
       checkInDate: moment(new Date(formValues.checkInDate)).toISOString(),
       checkOutDate: moment(new Date(formValues.checkOutDate)).toISOString(),
       room: rooms,
-      paymentMethod: 'credit_card'
+      paymentMethod: 'credit_card',
+      capacity,
     }
     try {
-      const response = await axios.post('http://localhost:4000/api/v1/booking/createOrder', params)
+      const response = await axios.post('http://localhost:4000/api/v1/booking/createOrder', params, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       if (response.data.data && response.data.data.paymentUrl) {
+        console.log(response.data.data);
         window.location.href = response.data.data.paymentUrl
       }
     } catch (error) {
@@ -63,7 +71,7 @@ export default function Payment({ rooms }) {
       value = 0
     }
 
-    setRoomQuantities((prev) => {
+    setRoomQuantities((prev: any) => {
       const existingRoom = prev[roomId]
 
       if (existingRoom !== undefined) {
@@ -80,7 +88,7 @@ export default function Payment({ rooms }) {
     })
   }
   const countMap = new Map()
-  rooms.forEach((room) => {
+  rooms.forEach((room: any) => {
     if (!countMap.has(room.name)) {
       countMap.set(room.name, 1)
     } else {
@@ -91,17 +99,17 @@ export default function Payment({ rooms }) {
     const quantity = roomQuantities[room._id] || 0
     return total + (room.pricePerNight * differenceInDays(new Date(checkOutDate as string), new Date(checkInDate as string))) * quantity
   }, 0)
-  const findRoomByName = (name: string) => rooms?.find(room => room.name === name);
+  const findRoomByName = (name: string) => rooms?.find((room: any) => room.name === name);
   return (
     <div className='main'>
       {/* <h3 className='font-bold text-4xl m-10'>Phòng Trống</h3> */}
       <Form form={form} onFinish={handleSearchRoom}>
-      <Form.Item hidden name='checkInDate' rules={[{ required: true, message: 'Vui lòng chọn ngày check-in!' }]}>
-            <DatePicker className='w-full' format='DD/MM/YYYY' />
-          </Form.Item>
-          <Form.Item hidden name='checkOutDate' rules={[{ required: true, message: 'Vui lòng chọn ngày check-out!' }]}>
-            <DatePicker className='w-full' format='DD/MM/YYYY' />
-          </Form.Item>
+        <Form.Item hidden name='checkInDate' rules={[{ required: true, message: 'Vui lòng chọn ngày check-in!' }]}>
+          <DatePicker className='w-full' format='DD/MM/YYYY' />
+        </Form.Item>
+        <Form.Item hidden name='checkOutDate' rules={[{ required: true, message: 'Vui lòng chọn ngày check-out!' }]}>
+          <DatePicker className='w-full' format='DD/MM/YYYY' />
+        </Form.Item>
         <h4 className='font-bold text-3xl mt-10  '>Tất Cả Các Loại Chỗ Nghỉ</h4>
         <div className='body_main'>
           <div className='form_detail_room'>
