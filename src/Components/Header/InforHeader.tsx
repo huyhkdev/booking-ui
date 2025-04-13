@@ -28,7 +28,7 @@ const InforHeader = () => {
           </Link>
           <Link to='/owner/hotels' className='block  text-black hover:bg-primary hover:text-white p-2 rounded'>
             Quản lý khách sạn
-            </Link>
+          </Link>
           <Link to='/change-password' className='block  text-black hover:bg-primary hover:text-white p-2 rounded'>
             Đổi mật khẩu
           </Link>
@@ -63,7 +63,7 @@ const InforHeader = () => {
         </div>
       </Popover>
 
-      
+
     </div>
   )
 }
