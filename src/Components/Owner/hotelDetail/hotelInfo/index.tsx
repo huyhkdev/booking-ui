@@ -2,6 +2,8 @@ import { Card, Descriptions, Image, Space, Tag, Typography } from 'antd'
 import { motion } from 'framer-motion'
 import { Hotel } from '../../../../hooks/owner'
 import { MailOutlined, PhoneOutlined, GlobalOutlined, StarOutlined, EnvironmentOutlined } from '@ant-design/icons'
+import HotelMapModal from '../../hotelMapModal'
+import { useState } from 'react'
 
 const { Title, Paragraph, Link: AntLink } = Typography
 
@@ -10,6 +12,7 @@ interface HotelInfoProps {
 }
 
 export const HotelInfo = ({ hotel }: HotelInfoProps) => {
+  const [mapOpen, setMapOpen] = useState(false)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -86,6 +89,18 @@ export const HotelInfo = ({ hotel }: HotelInfoProps) => {
               ))}
             </div>
           </Descriptions.Item>
+          <Descriptions.Item label='Vĩ độ (Latitude)'>{hotel.latitude ?? 'Chưa có'}</Descriptions.Item>
+          <Descriptions.Item label='Kinh độ (Longitude)'>{hotel.longitude ?? 'Chưa có'}</Descriptions.Item>
+          <Descriptions.Item label='Bản đồ'>
+            <button
+              onClick={() => {
+                setMapOpen(true)
+              }}
+              className='text-blue-500 hover:underline'
+            >
+              Xem bản đồ
+            </button>
+          </Descriptions.Item>
         </Descriptions>
       </Card>
 
@@ -117,6 +132,13 @@ export const HotelInfo = ({ hotel }: HotelInfoProps) => {
           </div>
         )}
       </Card>
+      <HotelMapModal
+        open={mapOpen}
+        onClose={() => setMapOpen(false)}
+        latitude={Number(hotel.latitude)}
+        longitude={Number(hotel.longitude)}
+        hotelName={hotel.name}
+      />
     </motion.div>
   )
 }

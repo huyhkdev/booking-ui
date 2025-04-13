@@ -32,6 +32,8 @@ export interface Hotel {
   website?: string
   images: string[]
   reviews: Review[]
+  latitude: string
+  longitude: string
   createdAt: Date
   updatedAt: Date
 }

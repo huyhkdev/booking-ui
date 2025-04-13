@@ -3,12 +3,13 @@ import { HomeOutlined, SettingOutlined, PieChartOutlined, InfoCircleOutlined } f
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Hotel, useDeleteHotel, useOwnerHotelDetail, useUpdateHotel } from '../../../hooks/owner'
 import { Header, Content } from 'antd/es/layout/layout'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { BreadcrumbProps, MenuProps } from 'antd'
-import { HotelInfo, ListRoom } from '../../../Components/Owner'
+import { HotelInfo } from '../../../Components/Owner'
 import { HotelDetailSetting } from '../../../Components/Owner/hotelDetail/settings'
 import { useAccessToken } from '../../../hooks/auth/useUserInfo'
 import { useQueryClient } from '@tanstack/react-query'
+import { ListRoomManager } from '../../../Components/Owner/room/ListRoomManager'
 
 const { Sider } = Layout
 
@@ -44,6 +45,10 @@ export const HotelDetail = () => {
   const { mutate: updateHotelMutate, isPending: updateLoading } = useUpdateHotel(token as string, hotelId as string)
   const { mutate: deleteHotelMutate } = useDeleteHotel(token as string, hotelId as string)
   const [selectedMenuKey, setSelectedMenuKey] = useState('1')
+  
+  useEffect(() => {
+    queryClient.removeQueries({ queryKey: ['rooms-hotel-owner'] })
+  },[])
 
   if (isLoading || !hotel) {
     return (
@@ -67,7 +72,7 @@ export const HotelDetail = () => {
       case '1':
         return <HotelInfo hotel={hotel} />
       case '2':
-        return <ListRoom rooms={hotel.rooms} />
+        return <ListRoomManager hotelId={hotelId as string} />
       case '3':
         return (
           <div>
@@ -113,7 +118,6 @@ export const HotelDetail = () => {
         onSuccess: () => {
           notification.success({ message: 'Xóa ảnh thành công!' })
           queryClient.invalidateQueries({ queryKey: ['hotel-detail'] })
-          setSelectedMenuKey('1')
         },
         onError: (error) => {
           notification.error({ message: 'Xóa ảnh thất bại!', description: error.message })

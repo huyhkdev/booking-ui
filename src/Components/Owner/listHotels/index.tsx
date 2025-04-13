@@ -100,7 +100,7 @@ export const ListHotelTable = ({ hotels }: HotelTableProps) => {
         columns={columns}
         dataSource={hotels}
         rowKey='_id'
-        pagination={{ pageSize: 6 }}
+        pagination={{ pageSize: 5 }}
         bordered
         className='bg-white rounded-xl shadow'
       />
