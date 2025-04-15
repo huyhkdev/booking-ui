@@ -65,7 +65,7 @@ export const ListHotel = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 2 }}
           className='text-center py-4 border-b'
         >
           <img
