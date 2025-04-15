@@ -2,7 +2,6 @@ import { Button, Space, Spin, Table, Tag, Typography } from 'antd'
 import { useNavigate } from 'react-router-dom'
 import type { ColumnsType } from 'antd/es/table'
 import { Hotel } from '../../../hooks/owner'
-import { motion } from 'framer-motion'
 import useProvince from '../../../hooks/province/useProvince'
 import { getLocationByCodeName, mapProvinceCodename } from '../../../utils/getLocationByCodeName'
 
@@ -81,10 +80,7 @@ export const ListHotelTable = ({ hotels }: HotelTableProps) => {
   ]
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+    <div
       className='space-y-4'
     >
       <Space className='w-full justify-between'>
@@ -104,6 +100,6 @@ export const ListHotelTable = ({ hotels }: HotelTableProps) => {
         bordered
         className='bg-white rounded-xl shadow'
       />
-    </motion.div>
+    </div>
   )
 }
