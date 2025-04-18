@@ -1,11 +1,11 @@
 import {
   InfoCircleOutlined,
   HomeOutlined,
-  PieChartOutlined,
+  BarChartOutlined,
   SettingOutlined,
   AppstoreOutlined,
-  PlusCircleOutlined,
-  BarChartOutlined
+  StarOutlined,
+  LineChartOutlined
 } from "@ant-design/icons"
 import { MenuProps } from "antd"
 
@@ -27,14 +27,14 @@ export const getSidebarMenuItems = (pathname: string): MenuProps['items'] => {
       },
       {
         key: '3',
-        icon: <PieChartOutlined />,
+        icon: <BarChartOutlined />,
         label: 'Thống kê'
       },
       {
         key: '4',
-        icon: <SettingOutlined />,
-        label: 'Cài đặt'
-      }
+        icon: <StarOutlined />,
+        label: 'Đánh giá'
+      },
     ]
   } else {
     // Menu dành cho trang owner/hotels
@@ -46,13 +46,13 @@ export const getSidebarMenuItems = (pathname: string): MenuProps['items'] => {
       },
       {
         key: '2',
-        icon: <PlusCircleOutlined />,
-        label: 'Thêm khách sạn'
+        icon: <LineChartOutlined />,
+        label: 'Thống kê'
       },
       {
         key: '3',
-        icon: <BarChartOutlined />,
-        label: 'Doanh thu'
+        icon: <StarOutlined />,
+        label: 'Đánh giá'
       },
       {
         key: '4',

@@ -10,6 +10,7 @@ import { HotelDetailSetting } from '../../../Components/Owner/hotelDetail/settin
 import { useAccessToken } from '../../../hooks/auth/useUserInfo'
 import { useQueryClient } from '@tanstack/react-query'
 import { ListRoomManager } from '../../../Components/Owner/room/ListRoomManager'
+import { Statistics } from '../../../Components/Owner/hotelDetail/statistics'
 
 const { Sider } = Layout
 
@@ -74,15 +75,7 @@ export const HotelDetail = () => {
       case '2':
         return <ListRoomManager hotelId={hotelId as string} />
       case '3':
-        return (
-          <div>
-            <h2 className='text-xl font-bold mb-4'>Thống kê người thuê</h2>
-            <div>
-              {/* <strong>Tổng lượt đánh giá:</strong> {hotel.reviews?.length} */}
-              <p>Chức năng đang phát triển...</p>
-            </div>
-          </div>
-        )
+        return <Statistics hotelId={hotelId as string} />
       case '4':
         return (
           <HotelDetailSetting
