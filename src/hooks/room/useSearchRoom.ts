@@ -17,7 +17,7 @@ export interface Room {
   hotel: Hotel
   roomNumber: string
   type: string,
-
+  reviews: any[],
   pricePerNight: number
   capacity: number
   amenities: string[]
