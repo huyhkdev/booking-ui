@@ -10,6 +10,90 @@ import dayjs from 'dayjs';
 import { useUploadAvatar } from '../../hooks/auth/useUploadAvatar';
 import { useUserBooking } from '../../hooks/booking/getUserBooking';
 import { useReview } from '../../hooks/booking/reviewBooking';
+import { useGenerateTravelItinerary } from '../../hooks/booking/generateTravelItinerary';
+import * as XLSX from 'xlsx';
+import { message } from 'antd'; // Giả sử bạn đang dùng Ant Design
+
+
+ function handleExportFile(response: any) {
+  const { itinerary, recommendations } = response;
+  const formattedData: any[] = [];
+
+  // Lấy location đầu tiên nếu có
+  const firstLocation = itinerary?.[0]?.activities?.[0]?.location || 'Không xác định';
+
+  // Tiêu đề
+  formattedData.push({
+    Day: 'Lịch trình du lịch',
+    Time: `Địa điểm: ${firstLocation}`,
+    Activity: '',
+    Details: ''
+  });
+
+  // Nội dung từng ngày
+  itinerary.forEach((day: any) => {
+    const dateStr = new Date(day.date).toLocaleDateString('vi-VN');
+    formattedData.push({
+      Day: `Ngày ${day.day} (${dateStr})`,
+      Time: '',
+      Activity: '',
+      Details: ''
+    });
+
+    day.activities.forEach((activity: any) => {
+      formattedData.push({
+        Day: '',
+        Time: activity.time,
+        Activity: activity.title,
+        Details: `${activity.description}\nĐịa điểm: ${activity.location}\nThời lượng: ${activity.duration}`
+      });
+    });
+  });
+
+  // Gợi ý chung
+  formattedData.push({
+    Day: 'Gợi ý chung',
+    Time: '',
+    Activity: '',
+    Details: ''
+  });
+
+  formattedData.push({
+    Day: '',
+    Time: 'Di chuyển',
+    Activity: '',
+    Details: recommendations?.transportation || 'Không có'
+  });
+
+  formattedData.push({
+    Day: '',
+    Time: 'Ẩm thực',
+    Activity: '',
+    Details: recommendations?.dining || 'Không có'
+  });
+
+  formattedData.push({
+    Day: '',
+    Time: 'Lưu ý',
+    Activity: '',
+    Details: recommendations?.notes || 'Không có'
+  });
+
+  // Tạo file Excel
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  worksheet['!cols'] = [
+    { width: 25 },
+    { width: 25 },
+    { width: 35 },
+    { width: 70}
+  ];
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Lịch trình');
+
+  XLSX.writeFile(workbook, 'Lich_trinh_du_lich.xlsx');
+}
+
 
 const USER_ACTIVE_STATE = "active";
 const Gender = {
@@ -28,6 +112,8 @@ const Profile = () => {
   const [userEdit, setUserEdit] = useState<any>(userDetails);
   const { data: bookingData, isLoading: bookingLoading } = useUserBooking(token as string);
   const bookings = bookingData?.data.data;
+
+  const { mutate: generateMutate, isPending: generateLoading } = useGenerateTravelItinerary(token as string);
 
   const { mutate: uploadMutate, isPending: uploadingPending } = useUploadAvatar(token as string);
   const handleAvatarChange = (e: any) => {
@@ -101,7 +187,13 @@ const Profile = () => {
 
 
   };
-
+  const handleGenerate = (bookingId: string) => {
+    generateMutate({ bookingId }, {
+      onSuccess: (data) => {
+        handleExportFile(data.data.data);
+      }
+    })
+  }
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -235,9 +327,9 @@ const Profile = () => {
                     Đánh giá
                   </button>
                 ) : (
-                  <button className="mt-4 w-full py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
+                  <Button onClick={() => handleGenerate(booking._id)} loading={generateLoading} className="mt-4 w-full py-2 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
                     AI gợi ý lịch trình
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>

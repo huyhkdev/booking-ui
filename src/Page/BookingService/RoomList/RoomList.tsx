@@ -16,7 +16,10 @@ interface Props {
 }
 const RoomList = ({ rooms, total, isLoading, searchParams, onLoadMore }: Props) => {
   const renderRoomCard = (room: Room) => {
-    const { hotel, name, amenities, pricePerNight } = room
+    const { hotel, name, amenities, pricePerNight, reviews } = room
+    const averageRating = reviews.length
+  ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+  : 0;
     const numOfNights = new Date(searchParams.checkOutDate).getDate() - new Date(searchParams.checkInDate).getDate()
     const discountedPrice = pricePerNight * numOfNights
     return (
@@ -51,11 +54,10 @@ const RoomList = ({ rooms, total, isLoading, searchParams, onLoadMore }: Props) 
           <div className='flex flex-col justify-between gap-1'>
             <div className='flex justify-center gap-2'>
               <div className='flex flex-col'>
-                <span className='font-bold'>Tốt</span>
-                <span className='text-[#595959] text-xs font-medium'>90 đánh giá</span>
+                <span className='text-[#595959] text-xs font-medium'>{reviews?.length === 0 ? "Chưa có " : reviews?.length } đánh giá</span>
               </div>
               <div className='bg-blue-900 text-white h-10 w-10 flex items-center justify-center rounded-md'>
-                {hotel.rating}
+                {averageRating}
               </div>
             </div>
             <div className='text-right'>

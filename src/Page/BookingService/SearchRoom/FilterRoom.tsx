@@ -58,12 +58,16 @@ const FilterRoom = ({ handleChange, handleReset, filters }: Props) => {
                 allowClear
                 onChange={(value) => handleChange('selectedAmenities', value)}
               >
-                <Option value='Bể bơi'>Bể bơi</Option>
-                <Option value='Lễ tân 24h'>Lễ tân 24h</Option>
-                <Option value='Bãi đỗ xe'>Bãi đỗ xe</Option>
-                <Option value='Phòng Gym'>Phòng Gym</Option>
-                <Option value='Nhà hàng'>Nhà hàng</Option>
-                <Option value='Wi-Fi miễn phí'>Wi-Fi miễn phí</Option>
+                <Option value="Wi-Fi miễn phí">Wi-Fi miễn phí</Option>
+                <Option value="Hồ bơi">Hồ bơi</Option>
+                <Option value="Nhà hàng">Nhà hàng</Option>
+                <Option value="Phòng gym">Phòng gym</Option>
+                <Option value="Spa">Spa</Option>
+                <Option value="Chỗ đậu xe">Chỗ đậu xe</Option>
+                <Option value="Phòng họp">Phòng họp</Option>
+                <Option value="Điều hòa">Điều hòa</Option>
+                <Option value="Thang máy">Thang máy</Option>
+                <Option value="Lễ tân 24/7">Lễ tân 24/7</Option>
               </Select>
             </Form.Item>
           </div>
