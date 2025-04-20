@@ -5,7 +5,8 @@ import {
   SettingOutlined,
   AppstoreOutlined,
   StarOutlined,
-  LineChartOutlined
+  LineChartOutlined,
+  WalletOutlined
 } from "@ant-design/icons"
 import { MenuProps } from "antd"
 
@@ -58,6 +59,11 @@ export const getSidebarMenuItems = (pathname: string): MenuProps['items'] => {
         key: '4',
         icon: <SettingOutlined />,
         label: 'Cài đặt'
+      },
+      {
+        key: '5',
+        icon: <WalletOutlined />,
+        label: 'Ví tiền'
       }
     ]
   }

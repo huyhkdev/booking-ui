@@ -7,6 +7,7 @@ import { Header, Content } from 'antd/es/layout/layout'
 import type { BreadcrumbProps } from 'antd'
 import { motion, AnimatePresence } from 'framer-motion'
 import ReviewManagement from '../../Components/Owner/ReviewManagement'
+import { WalletManagement } from './WalletManagement/WalletManagement'
 
 const { Sider } = Layout
 
@@ -46,6 +47,8 @@ export const ListHotel = () => {
         return <StatisticHotels />
       case '3':
         return <ReviewManagement />
+      case '5':
+        return <WalletManagement />
       default:
         return <ListHotelTable hotels={hotels} />
     }
